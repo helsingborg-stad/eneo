@@ -187,6 +187,10 @@ class AssistantUpdatePublic(AssistantCreatePublic):
             "appropriate permissions can see all sessions for this assistant."
         ),
     )
+    image_generation_enabled: Optional[bool] = Field(
+        default=None,
+        description="Whether image generation is enabled for this assistant.",
+    )
     data_retention_days: Optional[int] = None
     metadata_json: Optional[dict] = Field(
         default=NOT_PROVIDED,
@@ -308,6 +312,9 @@ class AssistantPublic(InDB, ResourcePermissionsMixin):
             "appropriate permissions can see all sessions for this assistant."
         ),
     )
+    image_generation_enabled: bool = Field(
+        description="Whether image generation is enabled for this assistant.",
+    )
     data_retention_days: Optional[int] = Field(
         default=None,
         description="Number of days to retain data for this assistant",
@@ -321,6 +328,7 @@ class AssistantPublic(InDB, ResourcePermissionsMixin):
 class DefaultAssistant(AssistantPublic):
     completion_model: Optional[CompletionModelSparse] = None
     insight_enabled: bool = False
+    image_generation_enabled: bool = False
 
 
 SessionInDB.model_rebuild()

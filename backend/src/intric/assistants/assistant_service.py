@@ -39,7 +39,9 @@ from intric.workflows.step_repo import StepRepository
 
 if TYPE_CHECKING:
     from intric.actors import ActorManager
-    from intric.ai_models.completion_models.completion_model import CompletionModelResponse
+    from intric.ai_models.completion_models.completion_model import (
+        CompletionModelResponse,
+    )
     from intric.assistants.references import ReferencesService
     from intric.completion_models.application import CompletionModelCRUDService
     from intric.completion_models.domain.completion_model import CompletionModel
@@ -84,7 +86,9 @@ def get_references(
     info_blob_ids = list(dict.fromkeys(re.findall(REFERENCE_PATTERN, response_string)))
 
     def _get_blob(blob_id):
-        return next((blob for blob in info_blobs if str(get_id_func(blob))[:8] == blob_id), None)
+        return next(
+            (blob for blob in info_blobs if str(get_id_func(blob))[:8] == blob_id), None
+        )
 
     blobs = [_get_blob(blob_id) for blob_id in info_blob_ids]
 
@@ -244,7 +248,9 @@ class AssistantService:
             space_id=space.id,
             prompt=prompt,
             completion_model=completion_model,
-            completion_model_kwargs=ModelKwargs(**(template.completion_model_kwargs or {})),
+            completion_model_kwargs=ModelKwargs(
+                **(template.completion_model_kwargs or {})
+            ),
             attachments=attachments,
             collections=collections,
             template=template,
@@ -305,6 +311,7 @@ class AssistantService:
         attachment_ids: list[UUID] | None = None,
         description: Union[str, NotProvided] = NOT_PROVIDED,
         insight_enabled: Optional[bool] = None,
+        image_generation_enabled: Optional[bool] = None,
         data_retention_days: Union[int, None, NotProvided] = NOT_PROVIDED,
         metadata_json: Union[dict, None, NotProvided] = NOT_PROVIDED,
         icon_id: Union[UUID, None, NotProvided] = NOT_PROVIDED,
@@ -329,7 +336,9 @@ class AssistantService:
             # Create the prompt if the prompt contains text
             # Update the description if the prompt contains description
             if prompt.text is not None:
-                prompt = await self.prompt_service.create_prompt(prompt.text, prompt.description)
+                prompt = await self.prompt_service.create_prompt(
+                    prompt.text, prompt.description
+                )
 
         completion_model = None
         if completion_model_id is not None:
@@ -340,15 +349,21 @@ class AssistantService:
             attachments = await self.file_service.get_file_infos(attachment_ids)
 
         if groups is not None:
-            groups = [space.get_collection(collection_id=group_id) for group_id in groups]
+            groups = [
+                space.get_collection(collection_id=group_id) for group_id in groups
+            ]
 
         if websites is not None:
-            websites = [space.get_website(website_id=website_id) for website_id in websites]
+            websites = [
+                space.get_website(website_id=website_id) for website_id in websites
+            ]
 
         integration_knowledge_list = None
         if integration_knowledge_ids is not None:
             integration_knowledge_list = [
-                space.get_integration_knowledge(integration_knowledge_id=integration_knowledge_id)
+                space.get_integration_knowledge(
+                    integration_knowledge_id=integration_knowledge_id
+                )
                 for integration_knowledge_id in integration_knowledge_ids
             ]
 
@@ -368,6 +383,7 @@ class AssistantService:
             integration_knowledge_list=integration_knowledge_list,
             description=description,
             insight_enabled=insight_enabled,
+            image_generation_enabled=image_generation_enabled,
             data_retention_days=data_retention_days,
             metadata_json=metadata_json,
             icon_id=icon_id,
@@ -377,7 +393,9 @@ class AssistantService:
         # Only check when either side is being updated to avoid false positives on
         # unrelated updates (e.g. renaming an assistant).
         knowledge_changing = (
-            groups is not None or websites is not None or integration_knowledge_ids is not None
+            groups is not None
+            or websites is not None
+            or integration_knowledge_ids is not None
         )
         mcp_changing = mcp_server_ids is not None
         if knowledge_changing or mcp_changing:
@@ -419,7 +437,9 @@ class AssistantService:
 
         return assistant, permissions
 
-    async def get_assistants(self, name: str = None, for_tenant: bool = False) -> list[Assistant]:
+    async def get_assistants(
+        self, name: str = None, for_tenant: bool = False
+    ) -> list[Assistant]:
         if for_tenant:
             return await self.get_tenant_assistants(name)
 
@@ -464,7 +484,9 @@ class AssistantService:
         if not actor.can_edit_assistants():
             raise UnauthorizedException()
 
-        return await self.auth_service.create_assistant_api_key("ina", assistant_id=assistant_id)
+        return await self.auth_service.create_assistant_api_key(
+            "ina", assistant_id=assistant_id
+        )
 
     async def get_prompts_by_assistant(self, assistant_id: UUID) -> list[Prompt]:
         space = await self.space_repo.get_space_by_assistant(assistant_id=assistant_id)
@@ -513,7 +535,9 @@ class AssistantService:
                         yield chunk
 
                     if chunk.response_type == ResponseType.FILES:
-                        image_file = await self.file_service.save_image_from_bytes(chunk.image_data)
+                        image_file = await self.file_service.save_image_from_bytes(
+                            chunk.image_data
+                        )
 
                         generated_files.append(image_file)
                         chunk.generated_file = image_file
@@ -527,8 +551,13 @@ class AssistantService:
                             for tc in chunk.tool_calls_metadata:
                                 # Check if this tool_call already exists (from TOOL_APPROVAL_REQUIRED)
                                 existing = next(
-                                    (t for t in tool_calls if t.tool_call_id and t.tool_call_id == tc.tool_call_id),
-                                    None
+                                    (
+                                        t
+                                        for t in tool_calls
+                                        if t.tool_call_id
+                                        and t.tool_call_id == tc.tool_call_id
+                                    ),
+                                    None,
                                 )
                                 if existing:
                                     # Update existing entry with approval status
@@ -570,17 +599,23 @@ class AssistantService:
                 )
                 # Prefer actual provider token counts, fall back to tiktoken estimates
                 if stream_usage and stream_usage.prompt_tokens is not None:
-                    num_tokens_question = stream_usage.prompt_tokens + assistant_selector_tokens
+                    num_tokens_question = (
+                        stream_usage.prompt_tokens + assistant_selector_tokens
+                    )
                     input_source = "provider"
                 else:
-                    num_tokens_question = response.total_token_count + assistant_selector_tokens
+                    num_tokens_question = (
+                        response.total_token_count + assistant_selector_tokens
+                    )
                     input_source = "tiktoken"
 
                 if stream_usage and stream_usage.completion_tokens is not None:
                     num_tokens_answer = stream_usage.completion_tokens
                     output_source = "provider"
                 else:
-                    num_tokens_answer = count_tokens(response_string) + reasoning_token_count
+                    num_tokens_answer = (
+                        count_tokens(response_string) + reasoning_token_count
+                    )
                     output_source = "tiktoken"
 
                 logger.info(
@@ -624,10 +659,14 @@ class AssistantService:
             )
             # Prefer actual provider token counts, fall back to tiktoken estimates
             if response.usage and response.usage.prompt_tokens is not None:
-                num_tokens_question = response.usage.prompt_tokens + assistant_selector_tokens
+                num_tokens_question = (
+                    response.usage.prompt_tokens + assistant_selector_tokens
+                )
                 input_source = "provider"
             else:
-                num_tokens_question = response.total_token_count + assistant_selector_tokens
+                num_tokens_question = (
+                    response.total_token_count + assistant_selector_tokens
+                )
                 input_source = "tiktoken"
 
             if response.usage and response.usage.completion_tokens is not None:
@@ -793,7 +832,11 @@ class AssistantService:
             completion_model=assistant_to_ask.completion_model,
             tools=(
                 UseTools(
-                    assistants=[ToolAssistant(id=assistant_to_ask.id, handle=assistant_to_ask.name)]
+                    assistants=[
+                        ToolAssistant(
+                            id=assistant_to_ask.id, handle=assistant_to_ask.name
+                        )
+                    ]
                 )
                 if assistant_to_ask.id is not None
                 else UseTools(assistants=[])
@@ -872,13 +915,16 @@ class AssistantService:
 
         # Update via repository
         from intric.database.tables.assistant_table import Assistants
+
         stmt = sa.select(Assistants).where(Assistants.id == assistant_id)
         assistant_in_db = await self.repo.session.scalar(stmt)
 
         await self.repo._set_mcp_servers(assistant_in_db, existing_associations)
 
         # Refresh and return
-        refreshed_space = await self.space_repo.get_space_by_assistant(assistant_id=assistant_id)
+        refreshed_space = await self.space_repo.get_space_by_assistant(
+            assistant_id=assistant_id
+        )
         assistant = refreshed_space.get_assistant(assistant_id=assistant_id)
         permissions = actor.get_assistant_permissions(assistant=assistant)
 
@@ -898,7 +944,10 @@ class AssistantService:
             raise UnauthorizedException()
 
         # Get existing associations from the database
-        from intric.database.tables.assistant_table import AssistantMCPServers, Assistants
+        from intric.database.tables.assistant_table import (
+            AssistantMCPServers,
+            Assistants,
+        )
         import sqlalchemy as sa
 
         stmt = sa.select(AssistantMCPServers).where(
@@ -922,7 +971,9 @@ class AssistantService:
         await self.repo._set_mcp_servers(assistant_in_db, existing_associations)
 
         # Refresh and return
-        refreshed_space = await self.space_repo.get_space_by_assistant(assistant_id=assistant_id)
+        refreshed_space = await self.space_repo.get_space_by_assistant(
+            assistant_id=assistant_id
+        )
         assistant = refreshed_space.get_assistant(assistant_id=assistant_id)
         permissions = actor.get_assistant_permissions(assistant=assistant)
 
@@ -945,7 +996,10 @@ class AssistantService:
             raise UnauthorizedException()
 
         # Get existing associations from the database
-        from intric.database.tables.assistant_table import AssistantMCPServers, Assistants
+        from intric.database.tables.assistant_table import (
+            AssistantMCPServers,
+            Assistants,
+        )
         import sqlalchemy as sa
 
         stmt = sa.select(AssistantMCPServers).where(
@@ -971,7 +1025,9 @@ class AssistantService:
         await self.repo._set_mcp_servers(assistant_in_db, existing_associations)
 
         # Refresh and return
-        refreshed_space = await self.space_repo.get_space_by_assistant(assistant_id=assistant_id)
+        refreshed_space = await self.space_repo.get_space_by_assistant(
+            assistant_id=assistant_id
+        )
         assistant = refreshed_space.get_assistant(assistant_id=assistant_id)
         permissions = actor.get_assistant_permissions(assistant=assistant)
 

@@ -53,6 +53,7 @@ class AssistantFactory:
         template: AssistantTemplate | None = None,
         is_default: bool = False,
         insight_enabled: bool = False,
+        image_generation_enabled: bool = False,
         data_retention_days: int | None = None,
         metadata_json: dict | None = None,
         description: str | None = None,
@@ -78,6 +79,7 @@ class AssistantFactory:
             source_template=template,
             is_default=is_default,
             insight_enabled=insight_enabled,
+            image_generation_enabled=image_generation_enabled,
             data_retention_days=data_retention_days,
             metadata_json=metadata_json,
             description=description,
@@ -106,7 +108,8 @@ class AssistantFactory:
             )
 
         attachments = [
-            File(**attachment.file.to_dict()) for attachment in assistant_in_db.attachments
+            File(**attachment.file.to_dict())
+            for attachment in assistant_in_db.attachments
         ]
 
         user = UserSparse.model_validate(assistant_in_db.user)
@@ -115,7 +118,9 @@ class AssistantFactory:
         )
 
         source_template = (
-            self.assistant_template_factory.create_assistant_template(assistant_in_db.template)
+            self.assistant_template_factory.create_assistant_template(
+                assistant_in_db.template
+            )
             if assistant_in_db.template
             else None
         )
@@ -141,6 +146,7 @@ class AssistantFactory:
             is_default=assistant_in_db.is_default,
             description=assistant_in_db.description,
             insight_enabled=assistant_in_db.insight_enabled,
+            image_generation_enabled=assistant_in_db.image_generation_enabled,
             icon_id=assistant_in_db.icon_id,
         )
 
@@ -159,7 +165,8 @@ class AssistantFactory:
             for assistant_collection in assistant_in_db.assistant_groups
         ]
         websites_ids = [
-            assistant_website.website_id for assistant_website in assistant_in_db.assistant_websites
+            assistant_website.website_id
+            for assistant_website in assistant_in_db.assistant_websites
         ]
         integration_knowledge_ids = [
             assistant_integration_knowledge.integration_knowledge_id
@@ -173,11 +180,16 @@ class AssistantFactory:
             )
 
         attachments = [
-            File(**attachment.file.to_dict()) for attachment in assistant_in_db.attachments
+            File(**attachment.file.to_dict())
+            for attachment in assistant_in_db.attachments
         ]
 
-        collections = [collection for collection in collections if collection.id in collection_ids]
-        assistant_websites = [website for website in websites if website.id in websites_ids]
+        collections = [
+            collection for collection in collections if collection.id in collection_ids
+        ]
+        assistant_websites = [
+            website for website in websites if website.id in websites_ids
+        ]
 
         integration_knowledge_list = [
             integration_knowledge
@@ -186,7 +198,7 @@ class AssistantFactory:
         ]
 
         # Use filtered MCP servers if available (set by space repo), otherwise map from DB
-        _mcp_server_entities = getattr(assistant_in_db, '_mcp_server_entities', None)
+        _mcp_server_entities = getattr(assistant_in_db, "_mcp_server_entities", None)
         if _mcp_server_entities is not None:
             mcp_servers = _mcp_server_entities
         else:
@@ -197,12 +209,18 @@ class AssistantFactory:
             assistant_in_db.completion_model_kwargs or {}
         )
         completion_model = next(
-            (cm for cm in completion_models if cm.id == assistant_in_db.completion_model_id),
+            (
+                cm
+                for cm in completion_models
+                if cm.id == assistant_in_db.completion_model_id
+            ),
             None,
         )
 
         source_template = (
-            self.assistant_template_factory.create_assistant_template(assistant_in_db.template)
+            self.assistant_template_factory.create_assistant_template(
+                assistant_in_db.template
+            )
             if assistant_in_db.template
             else None
         )
@@ -228,6 +246,7 @@ class AssistantFactory:
             is_default=assistant_in_db.is_default,
             description=assistant_in_db.description,
             insight_enabled=assistant_in_db.insight_enabled,
+            image_generation_enabled=assistant_in_db.image_generation_enabled,
             data_retention_days=assistant_in_db.data_retention_days,
             metadata_json=assistant_in_db.metadata_json,
             icon_id=assistant_in_db.icon_id,

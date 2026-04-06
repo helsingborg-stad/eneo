@@ -125,7 +125,6 @@ class Settings(BaseSettings):
     anthropic_api_key: Optional[str] = None
     ovhcloud_api_key: Optional[str] = None
     mistral_api_key: Optional[str] = None
-    flux_api_key: Optional[str] = None
     tavily_api_key: Optional[str] = None
     vllm_api_key: Optional[str] = None
     eneo_super_api_key: Optional[str] = None
@@ -158,9 +157,7 @@ class Settings(BaseSettings):
         20  # Base pool size (permanent connections) - default: current behavior
     )
     db_pool_max_overflow: int = 10  # Extra connections above pool_size (total max = 30)
-    db_pool_timeout: int = (
-        30  # Seconds to wait for connection before raising error - default: SQLAlchemy default
-    )
+    db_pool_timeout: int = 30  # Seconds to wait for connection before raising error - default: SQLAlchemy default
     db_pool_pre_ping: bool = (
         True  # Verify connections before use - prevents stale connection errors
     )
@@ -267,8 +264,6 @@ class Settings(BaseSettings):
     # Feature flags
     using_access_management: bool = True
     using_iam: bool = False
-    using_image_generation: bool = False
-
     # Max concurrent embedding API calls across all crawls (module-level semaphore)
     # Controls parallelism during page batch persistence to avoid overwhelming embedding APIs
     crawl_embedding_concurrency: int = 3

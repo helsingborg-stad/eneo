@@ -3,6 +3,7 @@ from uuid import UUID
 
 from fastapi import UploadFile
 
+from intric.database.database import sessionmanager
 from intric.files.file_models import File, FileBaseWithContent, FileCreate, FileType
 from intric.files.file_protocol import FileProtocol
 from intric.files.file_repo import FileRepository
@@ -37,7 +38,12 @@ class FileService:
         name: str = "generated_image.jpeg",
         mimetype: str = "image/jpeg",
     ):
-        """Create a file from raw image bytes returned by an AI model."""
+        """Create a file from raw image bytes returned by an AI model.
+
+        Uses a separate database session that commits immediately so the file
+        is visible to other requests (e.g. download) before the calling
+        streaming transaction completes.
+        """
         checksum = hashlib.md5(image_data).hexdigest()
         size = len(image_data)
 
@@ -50,13 +56,15 @@ class FileService:
             blob=image_data,
         )
 
-        return await self.repo.add(
-            FileCreate(
-                **file_base.model_dump(),
-                user_id=self.user.id,
-                tenant_id=self.user.tenant_id,
-            )
+        file_create = FileCreate(
+            **file_base.model_dump(),
+            user_id=self.user.id,
+            tenant_id=self.user.tenant_id,
         )
+
+        async with sessionmanager.session() as session, session.begin():
+            repo = FileRepository(session=session)
+            return await repo.add(file_create)
 
     async def get_file_by_id(self, file_id: UUID):
         file = await self.repo.get_by_id(file_id=file_id)

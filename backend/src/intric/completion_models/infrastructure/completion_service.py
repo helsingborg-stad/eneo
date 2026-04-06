@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import base64
 import json
 from typing import TYPE_CHECKING, AsyncGenerator, Optional
+
+import httpx
 
 from intric.ai_models.completion_models.completion_model import (
     Completion,
@@ -13,13 +16,15 @@ from intric.ai_models.completion_models.completion_model import (
 from intric.completion_models.infrastructure.context_builder import ContextBuilder
 from intric.files.file_models import File
 from intric.info_blobs.info_blob import InfoBlobChunkInDBWithScore
-from intric.main.config import SETTINGS, Settings, get_settings
+from intric.main.config import SETTINGS, Settings
 from intric.main.exceptions import ProviderInactiveException, ProviderNotFoundException
 from intric.main.logging import get_logger
-from intric.mcp_servers.infrastructure.proxy import MCPProxySession, MCPProxySessionFactory
+from intric.mcp_servers.infrastructure.proxy import (
+    MCPProxySession,
+    MCPProxySessionFactory,
+)
 from intric.mcp_servers.infrastructure.tool_approval import get_approval_manager
 from intric.sessions.session import SessionInDB
-from intric.vision_models.infrastructure.flux_ai import FluxAdapter
 
 if TYPE_CHECKING:
     from intric.completion_models.infrastructure.adapters.base_adapter import (
@@ -33,12 +38,6 @@ if TYPE_CHECKING:
     from intric.tenants.tenant import TenantInDB
 
 logger = get_logger(__name__)
-
-
-async def generate_image(prompt: str):
-    flux = FluxAdapter()
-
-    return await flux.generate_image(prompt=prompt)
 
 
 class CompletionService:
@@ -76,7 +75,7 @@ class CompletionService:
         )
 
         # All models must have provider_id
-        if not hasattr(model, 'provider_id') or not model.provider_id:
+        if not hasattr(model, "provider_id") or not model.provider_id:
             raise ValueError(
                 f"Model '{model.name}' is missing required provider_id. "
                 "All models must be associated with a ModelProvider."
@@ -87,11 +86,11 @@ class CompletionService:
             logger.error(
                 "Model requires database session but none available",
                 extra={
-                    "model_id": str(model.id) if hasattr(model, 'id') else None,
+                    "model_id": str(model.id) if hasattr(model, "id") else None,
                     "model_name": model.name,
                     "provider_id": str(model.provider_id),
                     "tenant_id": str(self.tenant.id) if self.tenant else None,
-                }
+                },
             )
             raise ValueError(
                 f"Model '{model.name}' requires database session to load provider credentials. "
@@ -127,12 +126,12 @@ class CompletionService:
         logger.info(
             f"Using TenantModelAdapter for model '{model.name}'",
             extra={
-                "model_id": str(model.id) if hasattr(model, 'id') else None,
+                "model_id": str(model.id) if hasattr(model, "id") else None,
                 "model_name": model.name,
                 "provider_id": str(model.provider_id),
                 "provider_type": provider_db.provider_type,
                 "tenant_id": str(self.tenant.id) if self.tenant else None,
-            }
+            },
         )
 
         return TenantModelAdapter(
@@ -140,6 +139,103 @@ class CompletionService:
             credential_resolver=credential_resolver,
             provider_type=provider_db.provider_type,
         )
+
+    async def _resolve_image_generation_model(self):
+        """Find the first enabled image generation model for the tenant."""
+        import sqlalchemy as sa
+        from intric.database.tables.ai_models_table import ImageGenerationModels
+        from intric.database.tables.model_providers_table import ModelProviders
+        from intric.model_providers.infrastructure.tenant_model_credential_resolver import (
+            TenantModelCredentialResolver,
+        )
+
+        if not self.session or not self.tenant:
+            raise ValueError(
+                "CompletionService requires database session and tenant "
+                "to resolve image generation model."
+            )
+
+        stmt = (
+            sa.select(ImageGenerationModels, ModelProviders)
+            .join(
+                ModelProviders, ImageGenerationModels.provider_id == ModelProviders.id
+            )
+            .where(
+                ImageGenerationModels.tenant_id == self.tenant.id,
+                ImageGenerationModels.is_enabled == True,  # noqa: E712
+            )
+            .order_by(ImageGenerationModels.created_at.desc())
+            .limit(1)
+        )
+        result = await self.session.execute(stmt)
+        row = result.one_or_none()
+
+        if row is None:
+            raise ValueError(
+                "No image generation model configured. "
+                "Please add an image generation model in the admin settings."
+            )
+
+        image_model_db, provider_db = row
+
+        if not provider_db.is_active:
+            raise ProviderInactiveException(
+                f"The model provider '{provider_db.name}' is currently inactive."
+            )
+
+        credential_resolver = TenantModelCredentialResolver(
+            provider_id=provider_db.id,
+            provider_type=provider_db.provider_type,
+            credentials=provider_db.credentials,
+            config=provider_db.config,
+            encryption_service=self.encryption_service,
+        )
+
+        return image_model_db, provider_db, credential_resolver
+
+    async def _generate_image(self, prompt: str, model: CompletionModel) -> bytes:
+        """Generate an image using LiteLLM's aimage_generation."""
+        import litellm
+
+        (
+            image_model_db,
+            provider_db,
+            credential_resolver,
+        ) = await self._resolve_image_generation_model()
+
+        model_name = image_model_db.litellm_model_name or image_model_db.name
+        litellm_model = f"{provider_db.provider_type}/{model_name}"
+        api_key = credential_resolver.get_api_key()
+
+        kwargs = {}
+        endpoint = credential_resolver.get_credential_field(field="endpoint")
+        if endpoint:
+            kwargs["api_base"] = endpoint
+
+        logger.info(
+            f"Generating image via LiteLLM model '{litellm_model}'",
+            extra={
+                "provider_type": provider_db.provider_type,
+                "image_model": model_name,
+            },
+        )
+
+        response = await litellm.aimage_generation(
+            prompt=prompt,
+            model=litellm_model,
+            api_key=api_key,
+            **kwargs,
+        )
+
+        image_data = response.data[0]
+
+        if getattr(image_data, "b64_json", None):
+            return base64.b64decode(image_data.b64_json)
+
+        async with httpx.AsyncClient() as client:
+            image_response = await client.get(image_data.url)
+            image_response.raise_for_status()
+            return image_response.content
 
     @staticmethod
     def is_valid_arguments(arguments: str):
@@ -152,7 +248,9 @@ class CompletionService:
             # If there is a JSON decode error or TypeError, return False
             return False
 
-    async def _handle_tool_call(self, completion: AsyncGenerator[Completion]):
+    async def _handle_tool_call(
+        self, completion: AsyncGenerator[Completion], model: CompletionModel
+    ):
         name = None
         arguments = ""
         function_called = False
@@ -173,7 +271,6 @@ class CompletionService:
                 yield chunk
                 continue
 
-
             if chunk.tool_call:
                 if chunk.tool_call.name:
                     name = chunk.tool_call.name
@@ -182,7 +279,6 @@ class CompletionService:
                     arguments += chunk.tool_call.arguments
 
                 if not name or not arguments or not self.is_valid_arguments(arguments):
-                    # Keep collecting the tool call
                     continue
                 elif not function_called:
                     call_args = json.loads(arguments)
@@ -190,7 +286,9 @@ class CompletionService:
                     if name == "generate_image":
                         yield Completion(response_type=ResponseType.INTRIC_EVENT)
 
-                        chunk.image_data = await generate_image(**call_args)
+                        chunk.image_data = await self._generate_image(
+                            prompt=call_args["prompt"], model=model
+                        )
                         chunk.response_type = ResponseType.FILES
 
                         yield chunk
@@ -226,9 +324,7 @@ class CompletionService:
         # Make sure everything fits in the context of the model
         max_tokens = model_adapter.get_token_limit_of_model()
 
-        # Image generation only works on streaming for now
-        # And only if feature flag is turned on
-        use_image_generation = use_image_generation and stream and get_settings().using_image_generation
+        use_image_generation = use_image_generation and stream
 
         context = self.context_builder.build_context(
             input_str=text_input,
@@ -255,7 +351,9 @@ class CompletionService:
         mcp_proxy: MCPProxySession | None = None
         if mcp_servers:
             mcp_proxy = self._mcp_proxy_factory.create(mcp_servers)
-            logger.debug(f"[MCP] Proxy created with {mcp_proxy.get_tool_count()} tools from {len(mcp_servers)} server(s)")
+            logger.debug(
+                f"[MCP] Proxy created with {mcp_proxy.get_tool_count()} tools from {len(mcp_servers)} server(s)"
+            )
 
         if not stream:
             try:
@@ -289,7 +387,9 @@ class CompletionService:
                 """
                 try:
                     # Get approval manager if tool approval is required
-                    approval_manager = get_approval_manager() if require_tool_approval else None
+                    approval_manager = (
+                        get_approval_manager() if require_tool_approval else None
+                    )
 
                     async for chunk in model_adapter.iterate_stream(
                         stream=stream_obj,
@@ -304,7 +404,7 @@ class CompletionService:
                     if mcp_proxy:
                         await mcp_proxy.close()
 
-            completion = self._handle_tool_call(streaming_wrapper())
+            completion = self._handle_tool_call(streaming_wrapper(), model=model)
 
         return CompletionModelResponse(
             completion=completion,

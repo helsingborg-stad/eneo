@@ -66,6 +66,7 @@ class Assistant(Entity):
         tool_assistants: list["Assistant"] = None,
         description: Optional[str] = None,
         insight_enabled: bool = False,
+        image_generation_enabled: bool = False,
         data_retention_days: Optional[int] = None,
         metadata_json: Optional[dict] = {},
         icon_id: Optional[UUID] = None,
@@ -92,8 +93,11 @@ class Assistant(Entity):
         self.tool_assistants = tool_assistants or []
         self.description = description
         self.insight_enabled = insight_enabled
+        self.image_generation_enabled = image_generation_enabled
         self.data_retention_days = data_retention_days
-        self.type = AssistantType.DEFAULT_ASSISTANT if is_default else AssistantType.ASSISTANT
+        self.type = (
+            AssistantType.DEFAULT_ASSISTANT if is_default else AssistantType.ASSISTANT
+        )
         self._metadata_json = metadata_json
         self.icon_id = icon_id
 
@@ -199,7 +203,9 @@ class Assistant(Entity):
         return self._integration_knowledge_list
 
     @integration_knowledge_list.setter
-    def integration_knowledge_list(self, integration_knowledge_list: list["IntegrationKnowledge"]):
+    def integration_knowledge_list(
+        self, integration_knowledge_list: list["IntegrationKnowledge"]
+    ):
         if integration_knowledge_list:
             self._validate_embedding_model(integration_knowledge_list)
 
@@ -234,6 +240,7 @@ class Assistant(Entity):
         published: bool | None = None,
         description: Union[str, None, NotProvided] = NOT_PROVIDED,
         insight_enabled: bool | None = None,
+        image_generation_enabled: bool | None = None,
         data_retention_days: Union[int, None, NotProvided] = NOT_PROVIDED,
         metadata_json: Union[dict, None, NotProvided] = NOT_PROVIDED,
         icon_id: Union[UUID, None, NotProvided] = NOT_PROVIDED,
@@ -272,6 +279,9 @@ class Assistant(Entity):
 
         if insight_enabled is not None:
             self.insight_enabled = insight_enabled
+
+        if image_generation_enabled is not None:
+            self.image_generation_enabled = image_generation_enabled
 
         if data_retention_days is not NOT_PROVIDED:
             self.data_retention_days = data_retention_days
@@ -338,7 +348,9 @@ class Assistant(Entity):
                 )
 
         # Fill half the context
-        num_chunks = self.completion_model.max_input_tokens // 200 // 2 if version == 2 else 30
+        num_chunks = (
+            self.completion_model.max_input_tokens // 200 // 2 if version == 2 else 30
+        )
 
         if self.has_knowledge():
             datastore_result = await references_service.get_references(
@@ -367,7 +379,7 @@ class Assistant(Entity):
             extended_logging=self.logging_enabled,
             model_kwargs=self.completion_model_kwargs,
             version=version,
-            use_image_generation=self.is_default,
+            use_image_generation=self.image_generation_enabled,
             web_search_results=web_search_results,
             mcp_servers=[] if self.has_knowledge() else self.mcp_servers,
             require_tool_approval=require_tool_approval,
