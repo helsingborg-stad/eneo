@@ -254,11 +254,12 @@ class CompletionService:
         name = None
         arguments = ""
         function_called = False
+        deferred_stop_chunk = None
 
         async for chunk in completion:
-            # Pass through stop chunk (carries usage data)
+            # Defer stop chunk until after tool call processing
             if chunk.stop:
-                yield chunk
+                deferred_stop_chunk = chunk
                 continue
 
             # Pass through MCP tool call events directly
@@ -299,6 +300,9 @@ class CompletionService:
                 chunk.response_type = ResponseType.TEXT
 
                 yield chunk
+
+        if deferred_stop_chunk:
+            yield deferred_stop_chunk
 
     async def get_response(
         self,
