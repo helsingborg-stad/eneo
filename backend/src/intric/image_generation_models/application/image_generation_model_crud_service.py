@@ -40,16 +40,22 @@ class ImageGenerationModelCRUDService:
         is_org_enabled: Union[bool, "NotProvided"],
         security_classification: Union[ModelId, None, "NotProvided"] = NOT_PROVIDED,
     ):
-        image_generation_model = await self.image_generation_model_repo.one(model_id=model_id)
+        image_generation_model = await self.image_generation_model_repo.one(
+            model_id=model_id
+        )
 
         if security_classification is not NOT_PROVIDED:
             if security_classification is None:
                 image_generation_model.security_classification = None
             else:
-                em_security_classification = await self.security_classification_repo.one(
-                    id=security_classification.id
+                em_security_classification = (
+                    await self.security_classification_repo.one(
+                        id=security_classification.id
+                    )
                 )
-                image_generation_model.security_classification = em_security_classification
+                image_generation_model.security_classification = (
+                    em_security_classification
+                )
 
         image_generation_model.update(is_org_enabled=is_org_enabled)
 

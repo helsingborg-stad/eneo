@@ -6,7 +6,9 @@ from sqlalchemy.orm import selectinload
 from intric.database.tables.ai_models_table import ImageGenerationModels
 from intric.database.tables.model_providers_table import ModelProviders
 from intric.database.tables.security_classifications_table import SecurityClassification
-from intric.image_generation_models.domain.image_generation_model import ImageGenerationModel
+from intric.image_generation_models.domain.image_generation_model import (
+    ImageGenerationModel,
+)
 from intric.main.exceptions import NotFoundException
 
 if TYPE_CHECKING:
@@ -23,8 +25,12 @@ class ImageGenerationModelRepository:
 
     async def all(self, with_deprecated: bool = False):
         stmt = (
-            sa.select(ImageGenerationModels, ModelProviders.name, ModelProviders.provider_type)
-            .outerjoin(ModelProviders, ImageGenerationModels.provider_id == ModelProviders.id)
+            sa.select(
+                ImageGenerationModels, ModelProviders.name, ModelProviders.provider_type
+            )
+            .outerjoin(
+                ModelProviders, ImageGenerationModels.provider_id == ModelProviders.id
+            )
             .options(
                 selectinload(ImageGenerationModels.security_classification),
                 selectinload(ImageGenerationModels.security_classification).options(
@@ -34,7 +40,7 @@ class ImageGenerationModelRepository:
             .where(
                 sa.or_(
                     ImageGenerationModels.tenant_id.is_(None),
-                    ImageGenerationModels.tenant_id == self.user.tenant_id
+                    ImageGenerationModels.tenant_id == self.user.tenant_id,
                 )
             )
             .order_by(
@@ -62,8 +68,12 @@ class ImageGenerationModelRepository:
 
     async def one_or_none(self, model_id: "UUID") -> Optional["ImageGenerationModel"]:
         stmt = (
-            sa.select(ImageGenerationModels, ModelProviders.name, ModelProviders.provider_type)
-            .outerjoin(ModelProviders, ImageGenerationModels.provider_id == ModelProviders.id)
+            sa.select(
+                ImageGenerationModels, ModelProviders.name, ModelProviders.provider_type
+            )
+            .outerjoin(
+                ModelProviders, ImageGenerationModels.provider_id == ModelProviders.id
+            )
             .options(
                 selectinload(ImageGenerationModels.security_classification),
                 selectinload(ImageGenerationModels.security_classification).options(
@@ -74,8 +84,8 @@ class ImageGenerationModelRepository:
                 ImageGenerationModels.id == model_id,
                 sa.or_(
                     ImageGenerationModels.tenant_id.is_(None),
-                    ImageGenerationModels.tenant_id == self.user.tenant_id
-                )
+                    ImageGenerationModels.tenant_id == self.user.tenant_id,
+                ),
             )
         )
 
