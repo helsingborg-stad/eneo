@@ -217,6 +217,10 @@ ACTION_METADATA = {
         "name_sv": "Transkriptionsmodell uppdaterad",
         "description_sv": "Loggar ändringar av transkriptionsmodell",
     },
+    ActionType.IMAGE_GENERATION_MODEL_UPDATED.value: {
+        "name_sv": "Bildgenereringsmodell uppdaterad",
+        "description_sv": "Loggar ändringar av bildgenereringsmodell",
+    },
     ActionType.TEMPLATE_CREATED.value: {
         "name_sv": "Mall skapad",
         "description_sv": "Loggar när en ny mall skapas",

@@ -8,6 +8,9 @@ from intric.ai_models.completion_models.completion_model import (
 from intric.embedding_models.presentation.embedding_model_models import (
     EmbeddingModelSecurityStatus,
 )
+from intric.image_generation_models.presentation.image_generation_model_models import (
+    ImageGenerationModelSecurityStatus,
+)
 from intric.transcription_models.presentation.transcription_model_models import (
     TranscriptionModelSecurityStatus,
 )
@@ -19,3 +22,4 @@ class ModelsPresentation(BaseModel):
     completion_models: List[CompletionModelSecurityStatus]
     embedding_models: List[EmbeddingModelSecurityStatus]
     transcription_models: List[TranscriptionModelSecurityStatus]
+    image_generation_models: List[ImageGenerationModelSecurityStatus]

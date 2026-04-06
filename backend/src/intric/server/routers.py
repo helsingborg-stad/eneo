@@ -24,6 +24,12 @@ from intric.embedding_models.presentation.embedding_model_router import (
 from intric.embedding_models.presentation.tenant_embedding_models_router import (
     router as tenant_embedding_models_router,
 )
+from intric.image_generation_models.presentation.image_generation_models_router import (
+    router as image_generation_models_router,
+)
+from intric.image_generation_models.presentation.tenant_image_generation_models_router import (  # noqa: E501
+    router as tenant_image_generation_models_router,
+)
 from intric.files.file_router import router as files_router
 from intric.group_chat.presentation.group_chat_router import router as group_chat_router
 from intric.groups_legacy.api.group_router import router as groups_router
@@ -161,6 +167,16 @@ router.include_router(
 router.include_router(
     tenant_transcription_models_router,
     prefix="/admin/tenant-models/transcription",
+    tags=["admin", "tenant-models"],
+)
+router.include_router(
+    image_generation_models_router,
+    prefix="/image-generation-models",
+    tags=["image-generation-models"],
+)
+router.include_router(
+    tenant_image_generation_models_router,
+    prefix="/admin/tenant-models/image-generation",
     tags=["admin", "tenant-models"],
 )
 router.include_router(files_router, prefix="/files", tags=["files"])

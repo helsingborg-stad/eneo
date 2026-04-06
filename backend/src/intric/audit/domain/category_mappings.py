@@ -60,6 +60,7 @@ CATEGORY_MAPPINGS = {
     ActionType.COMPLETION_MODEL_UPDATED.value: "user_actions",
     ActionType.EMBEDDING_MODEL_UPDATED.value: "user_actions",
     ActionType.TRANSCRIPTION_MODEL_UPDATED.value: "user_actions",
+    ActionType.IMAGE_GENERATION_MODEL_UPDATED.value: "user_actions",
     # Security Events (6 actions)
     ActionType.SECURITY_CLASSIFICATION_CREATED.value: "security_events",
     ActionType.SECURITY_CLASSIFICATION_UPDATED.value: "security_events",

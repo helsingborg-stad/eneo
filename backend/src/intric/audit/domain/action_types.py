@@ -59,6 +59,7 @@ class ActionType(str, Enum):
     COMPLETION_MODEL_UPDATED = "completion_model_updated"
     EMBEDDING_MODEL_UPDATED = "embedding_model_updated"
     TRANSCRIPTION_MODEL_UPDATED = "transcription_model_updated"
+    IMAGE_GENERATION_MODEL_UPDATED = "image_generation_model_updated"
     TEMPLATE_CREATED = "template_created"
     TEMPLATE_UPDATED = "template_updated"
     TEMPLATE_DELETED = "template_deleted"

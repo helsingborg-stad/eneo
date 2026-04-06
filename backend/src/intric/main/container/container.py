@@ -72,6 +72,12 @@ from intric.embedding_models.application.embedding_model_crud_service import (
     EmbeddingModelCRUDService,
 )
 from intric.embedding_models.domain.embedding_model_repo import EmbeddingModelRepository
+from intric.image_generation_models.application.image_generation_model_crud_service import (  # noqa: E501
+    ImageGenerationModelCRUDService,
+)
+from intric.image_generation_models.domain.image_generation_model_repo import (
+    ImageGenerationModelRepository,
+)
 from intric.embedding_models.infrastructure.create_embeddings_service import (
     CreateEmbeddingsService,
 )
@@ -585,6 +591,9 @@ class Container(containers.DeclarativeContainer):
     transcription_model_repo = providers.Factory(
         TranscriptionModelRepository, session=session, user=user
     )
+    image_generation_model_repo = providers.Factory(
+        ImageGenerationModelRepository, session=session, user=user
+    )
     embedding_model_repo = providers.Factory(
         AdminEmbeddingModelsService, session=session
     )
@@ -771,6 +780,12 @@ class Container(containers.DeclarativeContainer):
         EmbeddingModelCRUDService,
         user=user,
         embedding_model_repo=embedding_model_repo2,
+        security_classification_repo=security_classification_repo,
+    )
+    image_generation_model_crud_service = providers.Factory(
+        ImageGenerationModelCRUDService,
+        user=user,
+        image_generation_model_repo=image_generation_model_repo,
         security_classification_repo=security_classification_repo,
     )
     completion_model_service = providers.Factory(
