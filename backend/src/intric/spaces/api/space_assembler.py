@@ -5,6 +5,9 @@ from intric.collections.presentation.collection_models import CollectionPublic
 from intric.embedding_models.presentation.embedding_model_models import (
     EmbeddingModelPublic,
 )
+from intric.image_generation_models.presentation.image_generation_model_models import (
+    ImageGenerationModelPublic,
+)
 from intric.group_chat.presentation.models import GroupChatSparse
 from intric.integration.presentation.assemblers.integration_knowledge_assembler import (
     IntegrationKnowledgeAssembler,
@@ -389,6 +392,12 @@ class SpaceAssembler:
             if model.is_org_enabled
         ]
 
+        image_generation_models = [
+            ImageGenerationModelPublic.from_domain(model)
+            for model in space.image_generation_models
+            if model.is_org_enabled
+        ]
+
         default_assistant = None
         if getattr(space, "default_assistant", None) is not None:
             default_assistant = self.assistant_assembler.from_assistant_to_default_assistant_model(
@@ -414,6 +423,7 @@ class SpaceAssembler:
             embedding_models=embedding_models,
             completion_models=completion_models,
             transcription_models=transcription_models,
+            image_generation_models=image_generation_models,
             mcp_servers=mcp_servers,
             default_assistant=default_assistant,
             applications=applications,

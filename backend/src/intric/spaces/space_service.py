@@ -11,6 +11,9 @@ from intric.completion_models.domain.completion_model_service import (
 from intric.embedding_models.application.embedding_model_crud_service import (
     EmbeddingModelCRUDService,
 )
+from intric.image_generation_models.application.image_generation_model_crud_service import (
+    ImageGenerationModelCRUDService,
+)
 from intric.icons.icon_repo import IconRepository
 from intric.main.exceptions import (
     BadRequestException,
@@ -63,6 +66,7 @@ class SpaceService:
         user_repo: UsersRepository,
         user_groups_repo: UserGroupsRepository,
         embedding_model_crud_service: EmbeddingModelCRUDService,
+        image_generation_model_crud_service: ImageGenerationModelCRUDService,
         completion_model_crud_service: CompletionModelCRUDService,
         completion_model_service: CompletionModelService,
         transcription_model_crud_service: TranscriptionModelCRUDService,
@@ -77,6 +81,7 @@ class SpaceService:
         self.user_repo = user_repo
         self.user_groups_repo = user_groups_repo
         self.embedding_model_crud_service = embedding_model_crud_service
+        self.image_generation_model_crud_service = image_generation_model_crud_service
         self.completion_model_crud_service = completion_model_crud_service
         self.completion_model_service = completion_model_service
         self.transcription_model_crud_service = transcription_model_crud_service
@@ -123,6 +128,15 @@ class SpaceService:
             transcription_models = [transcription_model]
 
         space.transcription_models = transcription_models
+
+        # Set image generation models as only the latest one
+        image_generation_models = (
+            await self.image_generation_model_crud_service.get_image_generation_models()
+        )
+        latest_image_generation_model = _get_latest_model(image_generation_models)
+        space.image_generation_models = (
+            [latest_image_generation_model] if latest_image_generation_model else []
+        )
 
         # Set all tenant-enabled MCP servers for new spaces
         from intric.database.tables.mcp_server_table import MCPServers as MCPServersTable
@@ -186,6 +200,7 @@ class SpaceService:
         embedding_model_ids: list[UUID] = None,
         completion_model_ids: list[UUID] = None,
         transcription_model_ids: list[UUID] = None,
+        image_generation_model_ids: list[UUID] = None,
         mcp_server_ids: list[UUID] = None,
         mcp_tools: list = None,  # List of MCPToolSetting objects from API
         security_classification: Union[ModelId, NotProvided, None] = NOT_PROVIDED,
@@ -233,6 +248,15 @@ class SpaceService:
                     model_id=model_id
                 )
                 for model_id in transcription_model_ids
+            ]
+
+        image_generation_models = None
+        if image_generation_model_ids is not None:
+            image_generation_models = [
+                await self.image_generation_model_crud_service.get_image_generation_model(
+                    model_id=model_id
+                )
+                for model_id in image_generation_model_ids
             ]
 
         mcp_servers = None
@@ -301,6 +325,7 @@ class SpaceService:
             completion_models=completion_models,
             embedding_models=embedding_models,
             transcription_models=transcription_models,
+            image_generation_models=image_generation_models,
             mcp_servers=mcp_servers,
             security_classification=(
                 space_security_classification

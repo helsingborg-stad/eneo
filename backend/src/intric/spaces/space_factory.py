@@ -28,6 +28,9 @@ if TYPE_CHECKING:
     from intric.completion_models.domain.completion_model import CompletionModel
     from intric.database.tables.websites_table import Websites
     from intric.embedding_models.domain.embedding_model import EmbeddingModel
+    from intric.image_generation_models.domain.image_generation_model import (
+        ImageGenerationModel,
+    )
     from intric.mcp_servers.domain.entities.mcp_server import MCPServer
     from intric.transcription_models.domain.transcription_model import (
         TranscriptionModel,
@@ -58,6 +61,7 @@ class SpaceFactory:
             embedding_models=[],
             completion_models=[],
             transcription_models=[],
+            image_generation_models=[],
             mcp_servers=[],
             default_assistant=None,
             assistants=[],
@@ -80,6 +84,7 @@ class SpaceFactory:
         completion_models: list["CompletionModel"] = [],
         embedding_models: list["EmbeddingModel"] = [],
         transcription_models: list["TranscriptionModel"] = [],
+        image_generation_models: list["ImageGenerationModel"] = [],
         mcp_servers: list["MCPServer"] = [],
         assistants_in_db: list["Assistants"] = [],
         group_chats_in_db: list["GroupChatsTable"] = [],
@@ -103,12 +108,18 @@ class SpaceFactory:
             for embedding_model in embedding_models
             if not embedding_model.is_deprecated
         ]
+        non_deprecated_image_generation_models = [
+            model
+            for model in image_generation_models
+            if not model.is_deprecated
+        ]
 
         # Personal spaces have all models enabled
         if space_in_db.user_id is not None:
             space_completion_models = non_deprecated_completion_models
             space_transcription_models = non_deprecated_transcription_models
             space_embedding_models = non_deprecated_embedding_models
+            space_image_generation_models = non_deprecated_image_generation_models
             space_mcp_servers = mcp_servers
         else:
             space_completion_models = [
@@ -136,6 +147,15 @@ class SpaceFactory:
                 in [
                     mapping.embedding_model_id
                     for mapping in space_in_db.embedding_models_mapping
+                ]
+            ]
+            space_image_generation_models = [
+                model
+                for model in non_deprecated_image_generation_models
+                if model.id
+                in [
+                    mapping.image_generation_model_id
+                    for mapping in space_in_db.image_generation_models_mapping
                 ]
             ]
             space_mcp_servers = [
@@ -328,6 +348,7 @@ class SpaceFactory:
             embedding_models=space_embedding_models,
             transcription_models=space_transcription_models,
             completion_models=space_completion_models,
+            image_generation_models=space_image_generation_models,
             mcp_servers=space_mcp_servers,
             default_assistant=default_assistant,
             assistants=space_assistants,

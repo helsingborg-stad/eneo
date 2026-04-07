@@ -31,6 +31,7 @@ def service(actor: MagicMock):
         completion_model_crud_service=AsyncMock(),
         transcription_model_crud_service=AsyncMock(),
         embedding_model_crud_service=AsyncMock(),
+        image_generation_model_crud_service=AsyncMock(),
         factory=MagicMock(),
         user_repo=AsyncMock(),
         user=TEST_USER,

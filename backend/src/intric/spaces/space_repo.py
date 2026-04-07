@@ -13,6 +13,7 @@ from intric.database.database import AsyncSession
 from intric.database.tables.ai_models_table import (
     CompletionModels,
     EmbeddingModels,
+    ImageGenerationModels,
     TranscriptionModels,
 )
 from intric.database.tables.app_table import Apps, AppsFiles, AppsPrompts
@@ -51,6 +52,7 @@ from intric.database.tables.spaces_table import (
     Spaces,
     SpacesCompletionModels,
     SpacesEmbeddingModels,
+    SpacesImageGenerationModels,
     SpacesTranscriptionModels,
     SpacesUserGroups,
     SpacesUsers,
@@ -79,6 +81,9 @@ if TYPE_CHECKING:
     from intric.embedding_models.domain.embedding_model_repo import (
         EmbeddingModelRepository,
     )
+    from intric.image_generation_models.domain.image_generation_model_repo import (
+        ImageGenerationModelRepository,
+    )
     from intric.group_chat.domain.entities.group_chat import GroupChat
     from intric.mcp_servers.domain.entities.mcp_server import MCPServer
     from intric.transcription_models.domain.transcription_model_repo import (
@@ -100,6 +105,7 @@ class SpaceRepository:
         completion_model_repo: "CompletionModelRepository",
         transcription_model_repo: "TranscriptionModelRepository",
         embedding_model_repo: "EmbeddingModelRepository",
+        image_generation_model_repo: "ImageGenerationModelRepository",
         http_auth_encryption: "HttpAuthEncryptionService",
     ):
         self.session = session
@@ -109,6 +115,7 @@ class SpaceRepository:
         self.completion_model_repo = completion_model_repo
         self.transcription_model_repo = transcription_model_repo
         self.embedding_model_repo = embedding_model_repo
+        self.image_generation_model_repo = image_generation_model_repo
         self.assistant_repo = assistant_repo
         self.http_auth_encryption = http_auth_encryption
 
@@ -132,6 +139,7 @@ class SpaceRepository:
             selectinload(Spaces.completion_models_mapping),
             selectinload(Spaces.embedding_models_mapping),
             selectinload(Spaces.transcription_models_mapping),
+            selectinload(Spaces.image_generation_models_mapping),
             selectinload(Spaces.mcp_servers_mapping),
             selectinload(Spaces.security_classification),
             selectinload(Spaces.security_classification).selectinload(
@@ -275,6 +283,26 @@ class SpaceRepository:
                 [
                     dict(transcription_model_id=model.id, space_id=space_in_db.id)
                     for model in transcription_models
+                ]
+            )
+            await self.session.execute(stmt)
+
+    async def _set_image_generation_models(
+        self, space_in_db: Spaces, image_generation_models: list
+    ):
+        stmt = sa.delete(SpacesImageGenerationModels).where(
+            SpacesImageGenerationModels.space_id == space_in_db.id
+        )
+        await self.session.execute(stmt)
+
+        if image_generation_models:
+            stmt = sa.insert(SpacesImageGenerationModels).values(
+                [
+                    dict(
+                        image_generation_model_id=model.id,
+                        space_id=space_in_db.id,
+                    )
+                    for model in image_generation_models
                 ]
             )
             await self.session.execute(stmt)
@@ -1103,6 +1131,7 @@ class SpaceRepository:
         completion_models = await self.completion_model_repo.all(with_deprecated=True)
         embedding_models = await self.embedding_model_repo.all(with_deprecated=True)
         transcription_models = await self.transcription_model_repo.all(with_deprecated=True)
+        image_generation_models = await self.image_generation_model_repo.all()
 
         # Get tenant-enabled MCP servers directly
         from sqlalchemy.orm import selectinload as _selectinload
@@ -1169,6 +1198,7 @@ class SpaceRepository:
             completion_models=completion_models,
             embedding_models=embedding_models,
             transcription_models=transcription_models,
+            image_generation_models=image_generation_models,
             mcp_servers=mcp_servers,
             assistants_in_db=assistants,
             group_chats_in_db=group_chats,
@@ -1211,6 +1241,7 @@ class SpaceRepository:
         await self._set_completion_models(entry_in_db, space.completion_models)
         await self._set_embedding_models(entry_in_db, space.embedding_models)
         await self._set_transcription_models(entry_in_db, space.transcription_models)
+        await self._set_image_generation_models(entry_in_db, space.image_generation_models)
         await self._set_mcp_servers(entry_in_db, space.mcp_servers)
         await self._set_members(entry_in_db, space.members)
         await self._set_group_members(entry_in_db, space.group_members)

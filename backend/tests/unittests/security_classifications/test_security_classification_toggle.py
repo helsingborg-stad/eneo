@@ -72,6 +72,7 @@ def test_toggle_security_classification():
         embedding_models=[embedding_model],
         completion_models=[completion_model],
         transcription_models=[transcription_model],
+        image_generation_models=[],
         mcp_servers=[],
         default_assistant=MagicMock(),
         assistants=[],

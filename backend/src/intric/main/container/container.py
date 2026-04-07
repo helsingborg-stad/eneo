@@ -688,6 +688,7 @@ class Container(containers.DeclarativeContainer):
         completion_model_repo=completion_model_repo2,
         transcription_model_repo=transcription_model_repo,
         embedding_model_repo=embedding_model_repo2,
+        image_generation_model_repo=image_generation_model_repo,
         http_auth_encryption=http_auth_encryption_service,
     )
     app_template_repo = providers.Factory(
@@ -868,6 +869,7 @@ class Container(containers.DeclarativeContainer):
         user_repo=user_repo,
         user_groups_repo=user_groups_repo,
         embedding_model_crud_service=embedding_model_crud_service,
+        image_generation_model_crud_service=image_generation_model_crud_service,
         completion_model_crud_service=completion_model_crud_service,
         transcription_model_crud_service=transcription_model_crud_service,
         completion_model_service=completion_model_service,

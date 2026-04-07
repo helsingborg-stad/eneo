@@ -17,6 +17,9 @@ from intric.completion_models.presentation.completion_model_models import (
 from intric.embedding_models.presentation.embedding_model_models import (
     EmbeddingModelPublic,
 )
+from intric.image_generation_models.presentation.image_generation_model_models import (
+    ImageGenerationModelPublic,
+)
 from intric.group_chat.presentation.models import GroupChatSparse
 from intric.groups_legacy.api.group_models import GroupMetadata, GroupPublicWithMetadata
 from intric.integration.presentation.models import IntegrationKnowledgePublic
@@ -106,6 +109,7 @@ class UpdateSpaceRequest(BaseModel):
     embedding_models: list[ModelId]
     completion_models: list[ModelId]
     transcription_models: list[ModelId]
+    image_generation_models: list[ModelId]
     mcp_servers: list[ModelId]
     mcp_tools: list[MCPToolSetting]
 
@@ -192,6 +196,7 @@ class SpacePublic(SpaceDashboard):
     embedding_models: list[EmbeddingModelPublic]
     completion_models: list[CompletionModelPublic]
     transcription_models: list[TranscriptionModelPublic]
+    image_generation_models: list[ImageGenerationModelPublic]
     mcp_servers: list[dict]  # Will be populated by assembler
     knowledge: Knowledge
     members: PaginatedPermissions[SpaceMember]

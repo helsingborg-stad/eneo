@@ -26,6 +26,7 @@ def _space_from_db(db_space: Spaces) -> Space:
         embedding_models=[],
         completion_models=[],
         transcription_models=[],
+        image_generation_models=[],
         mcp_servers=[],
         default_assistant=None,
         assistants=[],
