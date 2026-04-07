@@ -527,6 +527,10 @@ class SpaceAssembler:
                 TranscriptionModelPublic.from_domain(tm)
                 for tm in result.affected_transcription_models
             ],
+            image_generation_models=[
+                ImageGenerationModelPublic.from_domain(m)
+                for m in result.affected_image_generation_models
+            ],
             mcp_servers=[
                 MCPServerAssembler.to_dict_with_tools(s)
                 for s in result.affected_mcp_servers

@@ -56,6 +56,9 @@ def test_update_space_with_high_sc():
     transcription_model_low = MagicMock(security_classification=security_classification_low)
     transcription_model_high = MagicMock(security_classification=security_classification_high)
 
+    image_gen_model_low = MagicMock(security_classification=security_classification_low)
+    image_gen_model_high = MagicMock(security_classification=security_classification_high)
+
     space.completion_models = [
         completion_model_low_1,
         completion_model_low_2,
@@ -73,6 +76,11 @@ def test_update_space_with_high_sc():
         transcription_model_high,
     ]
 
+    space.image_generation_models = [
+        image_gen_model_low,
+        image_gen_model_high,
+    ]
+
     assert len(space.completion_models) == 4
 
     space.update(security_classification=None)
@@ -88,6 +96,9 @@ def test_update_space_with_high_sc():
     assert len(space.transcription_models) == 2
     assert transcription_model_low in space.transcription_models
     assert transcription_model_high in space.transcription_models
+    assert len(space.image_generation_models) == 2
+    assert image_gen_model_low in space.image_generation_models
+    assert image_gen_model_high in space.image_generation_models
 
     space.update(security_classification=security_classification_low)
 
@@ -102,6 +113,9 @@ def test_update_space_with_high_sc():
     assert len(space.transcription_models) == 2
     assert transcription_model_low in space.transcription_models
     assert transcription_model_high in space.transcription_models
+    assert len(space.image_generation_models) == 2
+    assert image_gen_model_low in space.image_generation_models
+    assert image_gen_model_high in space.image_generation_models
 
     space.update(security_classification=security_classification_high)
 
@@ -116,6 +130,9 @@ def test_update_space_with_high_sc():
     assert len(space.transcription_models) == 1
     assert transcription_model_high in space.transcription_models
     assert transcription_model_low not in space.transcription_models
+    assert len(space.image_generation_models) == 1
+    assert image_gen_model_high in space.image_generation_models
+    assert image_gen_model_low not in space.image_generation_models
 
     space.update(security_classification=security_classification_god)
 
@@ -126,6 +143,7 @@ def test_update_space_with_high_sc():
     assert completion_model_god in space.completion_models
     assert len(space.embedding_models) == 0
     assert len(space.transcription_models) == 0
+    assert len(space.image_generation_models) == 0
 
 
 def test_update_personal_space_with_sc():

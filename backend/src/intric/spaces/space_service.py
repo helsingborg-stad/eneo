@@ -44,6 +44,9 @@ if TYPE_CHECKING:
     from intric.security_classifications.application.security_classification_service import (
         SecurityClassificationService,
     )
+    from intric.image_generation_models.domain.image_generation_model import (
+        ImageGenerationModel,
+    )
     from intric.transcription_models.domain import TranscriptionModel
 
 
@@ -53,6 +56,9 @@ class SpaceSecurityClassificationImpactAnalysis:
     affected_completion_models: list["CompletionModel"]
     affected_embedding_models: list["EmbeddingModel"]
     affected_transcription_models: list["TranscriptionModel"]
+    affected_image_generation_models: list["ImageGenerationModel"] = field(
+        default_factory=list
+    )
     affected_mcp_servers: list = field(default_factory=list)
 
 TENANT_SPACE_NAME = "Organization space" 
@@ -366,6 +372,7 @@ class SpaceService:
         current_completion_models = space.completion_models
         current_embedding_models = space.embedding_models
         current_transcription_models = space.transcription_models
+        current_image_generation_models = space.image_generation_models
         current_mcp_servers = space.mcp_servers
 
         space.update(
@@ -375,6 +382,9 @@ class SpaceService:
         remaining_completion_model_ids = [cm.id for cm in space.completion_models]
         remaining_embedding_model_ids = [em.id for em in space.embedding_models]
         remaining_transcription_model_ids = [tm.id for tm in space.transcription_models]
+        remaining_image_generation_model_ids = [
+            m.id for m in space.image_generation_models
+        ]
         remaining_mcp_server_ids = [s.id for s in space.mcp_servers]
 
         affected_completion_models = [
@@ -387,6 +397,11 @@ class SpaceService:
             tm
             for tm in current_transcription_models
             if tm.id not in remaining_transcription_model_ids
+        ]
+        affected_image_generation_models = [
+            m
+            for m in current_image_generation_models
+            if m.id not in remaining_image_generation_model_ids
         ]
         affected_mcp_servers = [
             s for s in current_mcp_servers if s.id not in remaining_mcp_server_ids
@@ -437,6 +452,7 @@ class SpaceService:
             affected_completion_models=affected_completion_models,
             affected_embedding_models=affected_embedding_models,
             affected_transcription_models=affected_transcription_models,
+            affected_image_generation_models=affected_image_generation_models,
             affected_mcp_servers=affected_mcp_servers,
         )
 

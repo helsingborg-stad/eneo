@@ -337,6 +337,7 @@ class Assistant(Entity):
         version: int = 1,
         web_search_results: list["WebSearchResult"] = [],
         require_tool_approval: bool = False,
+        image_generation_model=None,
     ):
         if self.completion_model is None:
             raise NoModelSelectedException()
@@ -380,6 +381,7 @@ class Assistant(Entity):
             model_kwargs=self.completion_model_kwargs,
             version=version,
             use_image_generation=self.image_generation_enabled,
+            image_generation_model=image_generation_model,
             web_search_results=web_search_results,
             mcp_servers=[] if self.has_knowledge() else self.mcp_servers,
             require_tool_approval=require_tool_approval,

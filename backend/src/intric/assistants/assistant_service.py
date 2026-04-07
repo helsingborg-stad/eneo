@@ -714,6 +714,13 @@ class AssistantService:
                     f"Embedding Model {item.embedding_model.name} is not in space."
                 )
 
+        if assistant.image_generation_enabled:
+            if not space.image_generation_models:
+                raise BadRequestException(
+                    "Image generation is enabled but no image generation model "
+                    "is configured in the space."
+                )
+
     async def ask(
         self,
         question: str,
@@ -786,6 +793,10 @@ class AssistantService:
         else:
             web_search_results = []
 
+        image_generation_model = None
+        if assistant_to_ask.image_generation_enabled:
+            image_generation_model = space.get_latest_image_generation_model()
+
         response, datastore_result = await assistant_to_ask.ask(
             question=cleaned_question,
             completion_service=self.completion_service,
@@ -796,6 +807,7 @@ class AssistantService:
             version=version,
             web_search_results=web_search_results,
             require_tool_approval=require_tool_approval,
+            image_generation_model=image_generation_model,
         )
 
         # TODO: Separate the response based on stream true or false
