@@ -16,6 +16,7 @@
   import { Page, Settings } from "$lib/components/layout";
   import SpaceStorageOverview from "./SpaceStorageOverview.svelte";
   import SelectTranscriptionModels from "./SelectTranscriptionModels.svelte";
+  import SelectImageGenerationModels from "./SelectImageGenerationModels.svelte";
   import { writable } from "svelte/store";
   import { getIntric } from "$lib/core/Intric.js";
   import ChangeSecurityClassification from "./ChangeSecurityClassification.svelte";
@@ -33,6 +34,9 @@
   let embeddingModels = $derived(models.embeddingModels.filter((model) => model.is_org_enabled));
   let transcriptionModels = $derived(
     models.transcriptionModels.filter((model) => model.is_org_enabled)
+  );
+  let imageGenerationModels = $derived(
+    models.imageGenerationModels.filter((model) => model.is_org_enabled)
   );
 
   const spaces = getSpacesManager();
@@ -61,7 +65,8 @@
   // Navigation guard for unsaved changes
   beforeNavigate((navigate) => {
     if ($currentChanges.hasUnsavedChanges) {
-      const confirmMessage = m.unsaved_changes_warning?.() ?? "Du har osparade ändringar. Vill du lämna sidan?";
+      const confirmMessage =
+        m.unsaved_changes_warning?.() ?? "Du har osparade ändringar. Vill du lämna sidan?";
       if (!confirm(confirmMessage)) {
         navigate.cancel();
         return;
@@ -160,22 +165,22 @@
     <Page.Title title={m.settings()}></Page.Title>
     <Page.Flex>
       {#if $currentChanges.hasUnsavedChanges}
-        <Button
-          variant="destructive"
-          disabled={$isSaving}
-          on:click={() => discardChanges()}
-        >{m.discard_all_changes()}</Button>
+        <Button variant="destructive" disabled={$isSaving} on:click={() => discardChanges()}
+          >{m.discard_all_changes()}</Button
+        >
         <Button
           variant="positive"
           class="h-8 w-32 whitespace-nowrap"
           disabled={$isSaving}
-          on:click={handleSave}
-        >{$isSaving ? m.loading() : m.save_changes()}</Button>
+          on:click={handleSave}>{$isSaving ? m.loading() : m.save_changes()}</Button
+        >
       {:else}
         {#if showSaveSuccess}
           <p class="text-positive-stronger px-4" transition:fade>{m.all_changes_saved()}</p>
         {/if}
-        <Button variant="primary" class="w-32" href={`/spaces/${$currentSpace.routeId}`}>{m.done()}</Button>
+        <Button variant="primary" class="w-32" href={`/spaces/${$currentSpace.routeId}`}
+          >{m.done()}</Button
+        >
       {/if}
     </Page.Flex>
   </Page.Header>
@@ -183,24 +188,24 @@
   <Page.Main>
     <Settings.Page>
       {#if !isOrgSpace}
-      <Settings.Group title={m.general()}>
-        <EditNameAndDescription></EditNameAndDescription>
-        <Settings.Row
-          title={m.avatar()}
-          description={m.avatar_description()}
-          hasChanges={$currentChanges.diff.icon_id !== undefined}
-          revertFn={() => discardChanges("icon_id")}
-        >
-          <IconUpload
-            {iconUrl}
-            uploading={iconUploading}
-            error={iconError}
-            on:upload={handleIconUpload}
-            on:delete={handleIconDelete}
-          />
-        </Settings.Row>
-        <SpaceStorageOverview></SpaceStorageOverview>
-      </Settings.Group>
+        <Settings.Group title={m.general()}>
+          <EditNameAndDescription></EditNameAndDescription>
+          <Settings.Row
+            title={m.avatar()}
+            description={m.avatar_description()}
+            hasChanges={$currentChanges.diff.icon_id !== undefined}
+            revertFn={() => discardChanges("icon_id")}
+          >
+            <IconUpload
+              {iconUrl}
+              uploading={iconUploading}
+              error={iconError}
+              on:upload={handleIconUpload}
+              on:delete={handleIconDelete}
+            />
+          </Settings.Row>
+          <SpaceStorageOverview></SpaceStorageOverview>
+        </Settings.Group>
       {/if}
       {#if !isOrgSpace}
         <Settings.Group title={m.security_and_privacy()}>
@@ -225,6 +230,9 @@
 
         <SelectTranscriptionModels selectableModels={transcriptionModels}
         ></SelectTranscriptionModels>
+
+        <SelectImageGenerationModels selectableModels={imageGenerationModels}
+        ></SelectImageGenerationModels>
 
         <SelectMCPServers selectableServers={data.mcpServers}></SelectMCPServers>
       </Settings.Group>

@@ -32,11 +32,22 @@ class FileService:
         # Token counting will happen when the file is used in an assistant context
         return saved_file
 
+    @staticmethod
+    def _detect_image_type(image_data: bytes) -> tuple[str, str]:
+        """Detect image format from magic bytes. Returns (mimetype, extension)."""
+        if image_data[:8] == b"\x89PNG\r\n\x1a\n":
+            return "image/png", "png"
+        if image_data[:2] == b"\xff\xd8":
+            return "image/jpeg", "jpeg"
+        if image_data[:4] == b"RIFF" and image_data[8:12] == b"WEBP":
+            return "image/webp", "webp"
+        if image_data[:6] in (b"GIF87a", b"GIF89a"):
+            return "image/gif", "gif"
+        return "image/png", "png"
+
     async def save_image_from_bytes(
         self,
         image_data: bytes,
-        name: str = "generated_image.jpeg",
-        mimetype: str = "image/jpeg",
     ):
         """Create a file from raw image bytes returned by an AI model.
 
@@ -44,6 +55,8 @@ class FileService:
         is visible to other requests (e.g. download) before the calling
         streaming transaction completes.
         """
+        mimetype, ext = self._detect_image_type(image_data)
+        name = f"generated_image.{ext}"
         checksum = hashlib.md5(image_data).hexdigest()
         size = len(image_data)
 

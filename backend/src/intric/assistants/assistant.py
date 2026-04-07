@@ -380,7 +380,7 @@ class Assistant(Entity):
             extended_logging=self.logging_enabled,
             model_kwargs=self.completion_model_kwargs,
             version=version,
-            use_image_generation=self.image_generation_enabled,
+            use_image_generation=self.image_generation_enabled and image_generation_model is not None,
             image_generation_model=image_generation_model,
             web_search_results=web_search_results,
             mcp_servers=[] if self.has_knowledge() else self.mcp_servers,

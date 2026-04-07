@@ -24,6 +24,7 @@
   {#if url}
     <img
       src={url}
+      crossorigin="anonymous"
       class="relative m-0 p-0 transition-opacity duration-200"
       style="opacity: 0; "
       onload={(ev) => {

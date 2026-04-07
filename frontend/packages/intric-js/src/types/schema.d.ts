@@ -8450,6 +8450,8 @@ export interface components {
       completion_models?: components["schemas"]["ModelId"][] | null;
       /** Transcription Models */
       transcription_models?: components["schemas"]["ModelId"][] | null;
+      /** Image Generation Models */
+      image_generation_models?: components["schemas"]["ModelId"][] | null;
       /** Mcp Servers */
       mcp_servers?: components["schemas"]["ModelId"][] | null;
       /** Mcp Tools */
@@ -9458,6 +9460,8 @@ export interface components {
       completion_models: components["schemas"]["CompletionModelPublic"][];
       /** Transcription Models */
       transcription_models: components["schemas"]["TranscriptionModelPublic"][];
+      /** Image Generation Models */
+      image_generation_models: components["schemas"]["ImageGenerationModelPublic"][];
       /** Mcp Servers */
       mcp_servers: {
           [key: string]: unknown;
@@ -10854,6 +10858,8 @@ export interface components {
       embedding_models: components["schemas"]["EmbeddingModelPublic"][];
       /** Transcription Models */
       transcription_models: components["schemas"]["TranscriptionModelPublic"][];
+      /** Image Generation Models */
+      image_generation_models: components["schemas"]["ImageGenerationModelPublic"][];
       /**
        * Mcp Servers
        * @default []
