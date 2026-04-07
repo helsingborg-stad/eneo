@@ -1,7 +1,12 @@
 <!-- Copyright (c) 2026 Sundsvalls Kommun -->
 
 <script lang="ts">
-  import type { CompletionModel, EmbeddingModel, TranscriptionModel } from "@intric/intric-js";
+  import type {
+    CompletionModel,
+    EmbeddingModel,
+    TranscriptionModel,
+    ImageGenerationModel
+  } from "@intric/intric-js";
   import { IconEllipsis } from "@intric/icons/ellipsis";
   import { Button, Dialog, Dropdown } from "@intric/ui";
   import { getIntric } from "$lib/core/Intric";
@@ -19,8 +24,12 @@
   import { toast } from "$lib/components/toast";
   import MigrateModelDialog from "./MigrateModelDialog.svelte";
 
-  export let model: CompletionModel | EmbeddingModel | TranscriptionModel;
-  export let type: "completionModel" | "embeddingModel" | "transcriptionModel";
+  export let model: CompletionModel | EmbeddingModel | TranscriptionModel | ImageGenerationModel;
+  export let type:
+    | "completionModel"
+    | "embeddingModel"
+    | "transcriptionModel"
+    | "imageGenerationModel";
   export let completionModels: CompletionModel[] = [];
 
   const intric = getIntric();
@@ -78,15 +87,19 @@
         await intric.tenantModels.deleteCompletion({ id: model.id });
       } else if (type === "embeddingModel") {
         await intric.tenantModels.deleteEmbedding({ id: model.id });
-      } else {
+      } else if (type === "transcriptionModel") {
         await intric.tenantModels.deleteTranscription({ id: model.id });
+      } else {
+        await intric.tenantModels.deleteImageGeneration({ id: model.id });
       }
 
       await invalidate("admin:model-providers:load");
       $showDeleteConfirm = false;
     } catch (e: any) {
       const msg = e.message || "";
-      deleteError = msg.includes("MODEL_IN_USE") ? m.model_in_use_error() : (msg || m.failed_to_delete_model());
+      deleteError = msg.includes("MODEL_IN_USE")
+        ? m.model_in_use_error()
+        : msg || m.failed_to_delete_model();
       deleteErrorStatus = typeof e?.status === "number" ? e.status : null;
     } finally {
       isDeleting = false;
@@ -94,8 +107,7 @@
   }
 
   $: showMigrationAction = type === "completionModel" && deleteErrorStatus === 400;
-  $: completionModelTargets =
-    type === "completionModel" ? completionModels : [];
+  $: completionModelTargets = type === "completionModel" ? completionModels : [];
 </script>
 
 <Dropdown.Root>
@@ -175,21 +187,25 @@
       <div class="flex flex-col gap-5 p-4">
         <!-- Error Alert with Migration Option -->
         {#if deleteError}
-          <div class="relative overflow-hidden rounded-lg border border-negative-default/30 bg-negative-dimmer/50">
-            <div class="absolute inset-y-0 left-0 w-1 bg-negative-default"></div>
+          <div
+            class="border-negative-default/30 bg-negative-dimmer/50 relative overflow-hidden rounded-lg border"
+          >
+            <div class="bg-negative-default absolute inset-y-0 left-0 w-1"></div>
             <div class="flex items-start gap-3 p-4 pl-5">
-              <div class="flex-shrink-0 rounded-full bg-negative-default/10 p-1.5">
-                <AlertTriangle class="h-4 w-4 text-negative-default" />
+              <div class="bg-negative-default/10 flex-shrink-0 rounded-full p-1.5">
+                <AlertTriangle class="text-negative-default h-4 w-4" />
               </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-negative-stronger">{m.failed_to_delete_model()}</p>
-                <p class="mt-1 text-sm text-negative-default/90">{deleteError}</p>
+              <div class="min-w-0 flex-1">
+                <p class="text-negative-stronger text-sm font-medium">
+                  {m.failed_to_delete_model()}
+                </p>
+                <p class="text-negative-default/90 mt-1 text-sm">{deleteError}</p>
               </div>
             </div>
             {#if showMigrationAction}
-              <div class="border-t border-negative-default/20 bg-negative-dimmer/30 px-4 py-3">
+              <div class="border-negative-default/20 bg-negative-dimmer/30 border-t px-4 py-3">
                 <button
-                  class="group flex w-full items-center justify-between rounded-md bg-primary/5 px-3 py-2.5 text-sm font-medium text-primary transition-all hover:bg-primary/10"
+                  class="group bg-primary/5 text-primary hover:bg-primary/10 flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-medium transition-all"
                   on:click={() => {
                     $showDeleteConfirm = false;
                     $showMigrateDialog = true;
@@ -205,12 +221,12 @@
 
         <!-- Confirmation Text -->
         <div class="space-y-2">
-          <p class="text-sm text-primary">
+          <p class="text-primary text-sm">
             {m.delete_model_confirm({
               name: "nickname" in model && model.nickname ? model.nickname : model.name
             })}
           </p>
-          <p class="text-sm text-muted">
+          <p class="text-muted text-sm">
             {m.delete_model_warning()}
           </p>
         </div>
@@ -220,13 +236,9 @@
       <Button variant="outlined" on:click={() => ($showDeleteConfirm = false)}>
         {m.cancel()}
       </Button>
-      <Button
-        variant="destructive"
-        on:click={handleDelete}
-        disabled={isDeleting}
-      >
+      <Button variant="destructive" on:click={handleDelete} disabled={isDeleting}>
         {#if isDeleting}
-          <Loader2 class="h-4 w-4 animate-spin mr-2" />
+          <Loader2 class="mr-2 h-4 w-4 animate-spin" />
           {m.deleting()}
         {:else}
           {m.delete_model()}

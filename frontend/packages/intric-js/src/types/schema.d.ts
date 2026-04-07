@@ -3,14 +3,11 @@
  * Do not make direct changes to the file.
  */
 
+
 /** OneOf type helpers */
 type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never };
-type XOR<T, U> = T | U extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U;
-type OneOf<T extends any[]> = T extends [infer Only]
-  ? Only
-  : T extends [infer A, infer B, ...infer Rest]
-    ? OneOf<[XOR<A, B>, ...Rest]>
-    : never;
+type XOR<T, U> = (T | U) extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U;
+type OneOf<T extends any[]> = T extends [infer Only] ? Only : T extends [infer A, infer B, ...infer Rest] ? OneOf<[XOR<A, B>, ...Rest]> : never;
 
 export interface paths {
   "/api/v1/crawl-runs/{id}/": {
@@ -1334,6 +1331,26 @@ export interface paths {
      * @description Delete a tenant-specific transcription model.
      */
     delete: operations["delete_tenant_transcription_model_api_v1_admin_tenant_models_transcription__model_id___delete"];
+  };
+  "/api/v1/image-generation-models/": {
+    /** Get Image Generation Models */
+    get: operations["get_image_generation_models_api_v1_image_generation_models__get"];
+  };
+  "/api/v1/image-generation-models/{id}/": {
+    /** Get Image Generation Model */
+    get: operations["get_image_generation_model_api_v1_image_generation_models__id___get"];
+    /** Update Image Generation Model */
+    post: operations["update_image_generation_model_api_v1_image_generation_models__id___post"];
+  };
+  "/api/v1/admin/tenant-models/image-generation/": {
+    /** Create Tenant Image Generation Model */
+    post: operations["create_tenant_image_generation_model_api_v1_admin_tenant_models_image_generation__post"];
+  };
+  "/api/v1/admin/tenant-models/image-generation/{model_id}/": {
+    /** Update Tenant Image Generation Model */
+    put: operations["update_tenant_image_generation_model_api_v1_admin_tenant_models_image_generation__model_id___put"];
+    /** Delete Tenant Image Generation Model */
+    delete: operations["delete_tenant_image_generation_model_api_v1_admin_tenant_models_image_generation__model_id___delete"];
   };
   "/api/v1/files/": {
     /** Get Files */
@@ -2876,81 +2893,7 @@ export interface components {
      * @description Standardized vocabulary of auditable actions
      * @enum {string}
      */
-    ActionType:
-      | "user_created"
-      | "user_deleted"
-      | "user_updated"
-      | "role_created"
-      | "role_modified"
-      | "role_deleted"
-      | "permission_changed"
-      | "tenant_settings_updated"
-      | "credentials_updated"
-      | "federation_updated"
-      | "api_key_generated"
-      | "module_added"
-      | "module_added_to_tenant"
-      | "assistant_created"
-      | "assistant_deleted"
-      | "assistant_updated"
-      | "assistant_transferred"
-      | "assistant_published"
-      | "space_created"
-      | "space_updated"
-      | "space_deleted"
-      | "space_member_added"
-      | "space_member_removed"
-      | "app_created"
-      | "app_deleted"
-      | "app_updated"
-      | "app_executed"
-      | "app_published"
-      | "app_run_deleted"
-      | "session_started"
-      | "session_ended"
-      | "file_uploaded"
-      | "file_deleted"
-      | "website_created"
-      | "website_updated"
-      | "website_deleted"
-      | "website_crawled"
-      | "website_transferred"
-      | "group_chat_created"
-      | "collection_created"
-      | "collection_updated"
-      | "collection_deleted"
-      | "integration_added"
-      | "integration_removed"
-      | "integration_connected"
-      | "integration_disconnected"
-      | "integration_knowledge_created"
-      | "integration_knowledge_deleted"
-      | "integration_knowledge_synced"
-      | "completion_model_updated"
-      | "embedding_model_updated"
-      | "transcription_model_updated"
-      | "template_created"
-      | "template_updated"
-      | "template_deleted"
-      | "security_classification_created"
-      | "security_classification_updated"
-      | "security_classification_deleted"
-      | "security_classification_levels_updated"
-      | "security_classification_enabled"
-      | "security_classification_disabled"
-      | "mcp_server_created"
-      | "mcp_server_updated"
-      | "mcp_server_deleted"
-      | "mcp_server_enabled"
-      | "mcp_server_disabled"
-      | "mcp_server_tool_enabled"
-      | "mcp_server_tool_disabled"
-      | "retention_policy_applied"
-      | "encryption_key_rotated"
-      | "system_maintenance"
-      | "audit_session_created"
-      | "audit_log_viewed"
-      | "audit_log_exported";
+    ActionType: "user_created" | "user_deleted" | "user_updated" | "role_created" | "role_modified" | "role_deleted" | "permission_changed" | "tenant_settings_updated" | "credentials_updated" | "federation_updated" | "api_key_generated" | "module_added" | "module_added_to_tenant" | "assistant_created" | "assistant_deleted" | "assistant_updated" | "assistant_transferred" | "assistant_published" | "space_created" | "space_updated" | "space_deleted" | "space_member_added" | "space_member_removed" | "app_created" | "app_deleted" | "app_updated" | "app_executed" | "app_published" | "app_run_deleted" | "session_started" | "session_ended" | "file_uploaded" | "file_deleted" | "website_created" | "website_updated" | "website_deleted" | "website_crawled" | "website_transferred" | "group_chat_created" | "collection_created" | "collection_updated" | "collection_deleted" | "integration_added" | "integration_removed" | "integration_connected" | "integration_disconnected" | "integration_knowledge_created" | "integration_knowledge_deleted" | "integration_knowledge_synced" | "completion_model_updated" | "embedding_model_updated" | "transcription_model_updated" | "image_generation_model_updated" | "template_created" | "template_updated" | "template_deleted" | "security_classification_created" | "security_classification_updated" | "security_classification_deleted" | "security_classification_levels_updated" | "security_classification_enabled" | "security_classification_disabled" | "mcp_server_created" | "mcp_server_updated" | "mcp_server_deleted" | "mcp_server_enabled" | "mcp_server_disabled" | "mcp_server_tool_enabled" | "mcp_server_tool_disabled" | "retention_policy_applied" | "encryption_key_rotated" | "system_maintenance" | "audit_session_created" | "audit_log_viewed" | "audit_log_exported";
     /**
      * ActionUpdate
      * @description Represents an action-level configuration change request.
@@ -3000,8 +2943,8 @@ export interface components {
       type: components["schemas"]["WizardType"];
       /** Value */
       value: {
-        [key: string]: string;
-      }[];
+          [key: string]: string;
+        }[];
     };
     /** AllowedOriginCreate */
     AllowedOriginCreate: {
@@ -3244,6 +3187,8 @@ export interface components {
       completion_model_kwargs?: {
         [key: string]: unknown;
       };
+      /** Completion Model Id */
+      completion_model_id?: string | null;
       wizard?: components["schemas"]["AppTemplateWizard"] | null;
       /** Input Type */
       input_type: string;
@@ -3688,8 +3633,8 @@ export interface components {
       integration_knowledge_list: components["schemas"]["IntegrationKnowledgePublic"][];
       /** Mcp Servers */
       mcp_servers: {
-        [key: string]: unknown;
-      }[];
+          [key: string]: unknown;
+        }[];
       /** Mcp Tools */
       mcp_tools?: components["schemas"]["MCPToolSetting"][];
       completion_model?: components["schemas"]["CompletionModelSparse"] | null;
@@ -3718,6 +3663,11 @@ export interface components {
        * @description Whether insights are enabled for this assistant. If enabled, users with appropriate permissions can see all sessions for this assistant.
        */
       insight_enabled: boolean;
+      /**
+       * Image Generation Enabled
+       * @description Whether image generation is enabled for this assistant.
+       */
+      image_generation_enabled: boolean;
       /**
        * Data Retention Days
        * @description Number of days to retain data for this assistant
@@ -3803,6 +3753,8 @@ export interface components {
       completion_model_kwargs?: {
         [key: string]: unknown;
       };
+      /** Completion Model Id */
+      completion_model_id?: string | null;
       wizard?: components["schemas"]["AssistantTemplateWizard"] | null;
       /** Icon Name */
       icon_name?: string | null;
@@ -4204,8 +4156,8 @@ export interface components {
       crawl_runs: components["schemas"]["intric__websites__presentation__website_models__CrawlRunPublic"][];
       /** Errors */
       errors: {
-        [key: string]: string;
-      }[];
+          [key: string]: string;
+        }[];
     };
     /**
      * CallbackRequest
@@ -5305,8 +5257,8 @@ export interface components {
       integration_knowledge_list: components["schemas"]["IntegrationKnowledgePublic"][];
       /** Mcp Servers */
       mcp_servers: {
-        [key: string]: unknown;
-      }[];
+          [key: string]: unknown;
+        }[];
       /** Mcp Tools */
       mcp_tools?: components["schemas"]["MCPToolSetting"][];
       completion_model?: components["schemas"]["CompletionModelSparse"] | null;
@@ -5335,6 +5287,11 @@ export interface components {
        * @default false
        */
       insight_enabled?: boolean;
+      /**
+       * Image Generation Enabled
+       * @default false
+       */
+      image_generation_enabled?: boolean;
       /**
        * Data Retention Days
        * @description Number of days to retain data for this assistant
@@ -5736,70 +5693,12 @@ export interface components {
      * @description Categorize what type of entity was affected
      * @enum {string}
      */
-    EntityType:
-      | "user"
-      | "assistant"
-      | "space"
-      | "app"
-      | "file"
-      | "website"
-      | "tenant_settings"
-      | "credential"
-      | "federation_config"
-      | "api_key"
-      | "role"
-      | "module"
-      | "template"
-      | "group_chat"
-      | "collection"
-      | "app_run"
-      | "security_classification"
-      | "integration"
-      | "integration_knowledge"
-      | "completion_model"
-      | "embedding_model"
-      | "transcription_model"
-      | "audit_log"
-      | "mcp_server"
-      | "mcp_server_tool";
+    EntityType: "user" | "assistant" | "space" | "app" | "file" | "website" | "tenant_settings" | "credential" | "federation_config" | "api_key" | "role" | "module" | "template" | "group_chat" | "collection" | "app_run" | "security_classification" | "integration" | "integration_knowledge" | "completion_model" | "embedding_model" | "transcription_model" | "image_generation_model" | "audit_log" | "mcp_server" | "mcp_server_tool";
     /**
      * ErrorCodes
      * @enum {integer}
      */
-    ErrorCodes:
-      | 9000
-      | 9001
-      | 9002
-      | 9003
-      | 9004
-      | 9005
-      | 9006
-      | 9007
-      | 9008
-      | 9009
-      | 9010
-      | 9011
-      | 9012
-      | 9013
-      | 9014
-      | 9015
-      | 9016
-      | 9017
-      | 9018
-      | 9019
-      | 9020
-      | 9021
-      | 9022
-      | 9023
-      | 9024
-      | 9025
-      | 9026
-      | 9027
-      | 9028
-      | 9029
-      | 9030
-      | 9031
-      | 9032;
+    ErrorCodes: 9000 | 9001 | 9002 | 9003 | 9004 | 9005 | 9006 | 9007 | 9008 | 9009 | 9010 | 9011 | 9012 | 9013 | 9014 | 9015 | 9016 | 9017 | 9018 | 9019 | 9020 | 9021 | 9022 | 9023 | 9024 | 9025 | 9026 | 9027 | 9028 | 9029 | 9030 | 9031 | 9032;
     /**
      * ExportJobRequest
      * @description Schema for requesting async audit log export.
@@ -6328,6 +6227,139 @@ export interface components {
        */
       id: string;
     };
+    /** ImageGenerationModelPublic */
+    ImageGenerationModelPublic: {
+      /** Created At */
+      created_at?: string | null;
+      /** Updated At */
+      updated_at?: string | null;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Name */
+      name: string;
+      /** Nickname */
+      nickname?: string | null;
+      /** Family */
+      family?: string | null;
+      /** Is Deprecated */
+      is_deprecated: boolean;
+      /** Open Source */
+      open_source: boolean;
+      /** Hf Link */
+      hf_link?: string | null;
+      /** Stability */
+      stability?: string | null;
+      /** Hosting */
+      hosting?: string | null;
+      /** Description */
+      description?: string | null;
+      /** Org */
+      org?: string | null;
+      /** Litellm Model Name */
+      litellm_model_name?: string | null;
+      /**
+       * Can Access
+       * @default false
+       */
+      can_access?: boolean;
+      /**
+       * Is Locked
+       * @default true
+       */
+      is_locked?: boolean;
+      /** Lock Reason */
+      lock_reason?: string | null;
+      /**
+       * Is Org Enabled
+       * @default false
+       */
+      is_org_enabled?: boolean;
+      /** Credential Provider */
+      credential_provider?: string | null;
+      security_classification?: components["schemas"]["SecurityClassificationPublic"] | null;
+      /** Tenant Id */
+      tenant_id?: string | null;
+      /** Provider Id */
+      provider_id?: string | null;
+      /** Provider Name */
+      provider_name?: string | null;
+      /** Provider Type */
+      provider_type?: string | null;
+    };
+    /** ImageGenerationModelSecurityStatus */
+    ImageGenerationModelSecurityStatus: {
+      /** Created At */
+      created_at?: string | null;
+      /** Updated At */
+      updated_at?: string | null;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /** Name */
+      name: string;
+      /** Nickname */
+      nickname?: string | null;
+      /** Family */
+      family?: string | null;
+      /** Is Deprecated */
+      is_deprecated: boolean;
+      /** Open Source */
+      open_source: boolean;
+      /** Hf Link */
+      hf_link?: string | null;
+      /** Stability */
+      stability?: string | null;
+      /** Hosting */
+      hosting?: string | null;
+      /** Description */
+      description?: string | null;
+      /** Org */
+      org?: string | null;
+      /** Litellm Model Name */
+      litellm_model_name?: string | null;
+      /**
+       * Can Access
+       * @default false
+       */
+      can_access?: boolean;
+      /**
+       * Is Locked
+       * @default true
+       */
+      is_locked?: boolean;
+      /** Lock Reason */
+      lock_reason?: string | null;
+      /**
+       * Is Org Enabled
+       * @default false
+       */
+      is_org_enabled?: boolean;
+      /** Credential Provider */
+      credential_provider?: string | null;
+      security_classification?: components["schemas"]["SecurityClassificationPublic"] | null;
+      /** Tenant Id */
+      tenant_id?: string | null;
+      /** Provider Id */
+      provider_id?: string | null;
+      /** Provider Name */
+      provider_name?: string | null;
+      /** Provider Type */
+      provider_type?: string | null;
+      /** Meets Security Classification */
+      meets_security_classification?: boolean | null;
+    };
+    /** ImageGenerationModelUpdate */
+    ImageGenerationModelUpdate: {
+      /** Is Org Enabled */
+      is_org_enabled?: boolean;
+      /** Security Classification */
+      security_classification?: components["schemas"]["ModelId"] | null;
+    };
     /** InfoBlobAddPublic */
     InfoBlobAddPublic: {
       /** Text */
@@ -6457,12 +6489,7 @@ export interface components {
      * InputFieldType
      * @enum {string}
      */
-    InputFieldType:
-      | "text-field"
-      | "text-upload"
-      | "audio-upload"
-      | "audio-recorder"
-      | "image-upload";
+    InputFieldType: "text-field" | "text-upload" | "audio-upload" | "audio-recorder" | "image-upload";
     /** Integration */
     Integration: {
       /**
@@ -7438,6 +7465,8 @@ export interface components {
       embedding_models: components["schemas"]["EmbeddingModelSecurityStatus"][];
       /** Transcription Models */
       transcription_models: components["schemas"]["TranscriptionModelSecurityStatus"][];
+      /** Image Generation Models */
+      image_generation_models: components["schemas"]["ImageGenerationModelSecurityStatus"][];
     };
     /** ModuleBase */
     ModuleBase: {
@@ -7829,6 +7858,19 @@ export interface components {
        * @description List of items returned in the response
        */
       items: components["schemas"]["GroupPublicWithMetadata"][];
+      /**
+       * Count
+       * @description Number of items returned in the response
+       */
+      count: number;
+    };
+    /** PaginatedResponse[ImageGenerationModelPublic] */
+    PaginatedResponse_ImageGenerationModelPublic_: {
+      /**
+       * Items
+       * @description List of items returned in the response
+       */
+      items: components["schemas"]["ImageGenerationModelPublic"][];
       /**
        * Count
        * @description Number of items returned in the response
@@ -8280,6 +8322,11 @@ export interface components {
        * @description Whether insights are enabled for this assistant. If enabled, users with appropriate permissions can see all sessions for this assistant.
        */
       insight_enabled?: boolean | null;
+      /**
+       * Image Generation Enabled
+       * @description Whether image generation is enabled for this assistant.
+       */
+      image_generation_enabled?: boolean | null;
       /** Data Retention Days */
       data_retention_days?: number | null;
       /**
@@ -8450,18 +8497,7 @@ export interface components {
      * Permission
      * @enum {string}
      */
-    Permission:
-      | "assistants"
-      | "group_chats"
-      | "apps"
-      | "services"
-      | "collections"
-      | "insights"
-      | "AI"
-      | "editor"
-      | "admin"
-      | "websites"
-      | "integrations";
+    Permission: "assistants" | "group_chats" | "apps" | "services" | "collections" | "insights" | "AI" | "editor" | "admin" | "websites" | "integrations";
     /** PermissionPublic */
     PermissionPublic: {
       name: components["schemas"]["Permission"];
@@ -8607,16 +8643,7 @@ export interface components {
      * ResourcePermission
      * @enum {string}
      */
-    ResourcePermission:
-      | "read"
-      | "create"
-      | "edit"
-      | "delete"
-      | "add"
-      | "remove"
-      | "publish"
-      | "insight_view"
-      | "insight_toggle";
+    ResourcePermission: "read" | "create" | "edit" | "delete" | "add" | "remove" | "publish" | "insight_view" | "insight_toggle";
     /**
      * RetentionPolicyResponse
      * @description Schema for audit log retention policy response.
@@ -9016,12 +9043,9 @@ export interface components {
       /** Input */
       input: string;
       /** Output */
-      output:
-        | {
-            [key: string]: unknown;
-          }
-        | unknown[]
-        | string;
+      output: {
+        [key: string]: unknown;
+      } | unknown[] | string;
       completion_model: components["schemas"]["CompletionModelPublic"];
       /** References */
       references: components["schemas"]["InfoBlobPublic"][];
@@ -9436,8 +9460,8 @@ export interface components {
       transcription_models: components["schemas"]["TranscriptionModelPublic"][];
       /** Mcp Servers */
       mcp_servers: {
-        [key: string]: unknown;
-      }[];
+          [key: string]: unknown;
+        }[];
       knowledge: components["schemas"]["Knowledge"];
       members: components["schemas"]["PaginatedPermissions_SpaceMember_"];
       group_members: components["schemas"]["PaginatedPermissions_SpaceGroupMember_"];
@@ -9665,8 +9689,8 @@ export interface components {
        * @description Get skipped file details from metadata.
        */
       skipped_details: readonly {
-        [key: string]: unknown;
-      }[];
+          [key: string]: unknown;
+        }[];
       /**
        * Duration Seconds
        * @description Calculate sync duration in seconds.
@@ -9682,18 +9706,7 @@ export interface components {
      * Task
      * @enum {string}
      */
-    Task:
-      | "upload_info_blob"
-      | "transcription"
-      | "crawl"
-      | "embed_group"
-      | "crawl_all_websites"
-      | "run_app"
-      | "pull_confluence_content"
-      | "pull_sharepoint_content"
-      | "sync_sharepoint_delta"
-      | "update_model_usage_stats"
-      | "analyze_conversation_insights";
+    Task: "upload_info_blob" | "transcription" | "crawl" | "embed_group" | "crawl_all_websites" | "run_app" | "pull_confluence_content" | "pull_sharepoint_content" | "sync_sharepoint_delta" | "update_model_usage_stats" | "analyze_conversation_insights";
     /** TemplateCreate */
     TemplateCreate: {
       /**
@@ -9707,10 +9720,7 @@ export interface components {
     /** TemplateListPublic */
     TemplateListPublic: {
       /** Items */
-      items: (
-        | components["schemas"]["AppTemplatePublic"]
-        | components["schemas"]["AssistantTemplatePublic"]
-      )[];
+      items: (components["schemas"]["AppTemplatePublic"] | components["schemas"]["AssistantTemplatePublic"])[];
       /** Count */
       count: number;
     };
@@ -9985,6 +9995,76 @@ export interface components {
        * @description Maximum input tokens
        */
       max_input?: number | null;
+      /**
+       * Hosting
+       * @description Hosting location (swe, eu, usa)
+       */
+      hosting?: string | null;
+      /**
+       * Open Source
+       * @description Is the model open source
+       */
+      open_source?: boolean | null;
+      /**
+       * Stability
+       * @description Model stability (stable, experimental)
+       */
+      stability?: string | null;
+    };
+    /** TenantImageGenerationModelCreate */
+    TenantImageGenerationModelCreate: {
+      /**
+       * Provider Id
+       * Format: uuid
+       * @description Model provider ID
+       */
+      provider_id: string;
+      /**
+       * Name
+       * @description Model identifier (e.g., 'dall-e-3', 'stable-diffusion-xl')
+       */
+      name: string;
+      /**
+       * Display Name
+       * @description User-friendly display name
+       */
+      display_name: string;
+      /**
+       * Family
+       * @description Model family (e.g., 'openai', 'stability', 'flux')
+       * @default openai
+       */
+      family?: string;
+      /**
+       * Hosting
+       * @description Hosting location (swe, eu, usa)
+       * @default swe
+       */
+      hosting?: string;
+      /**
+       * Is Active
+       * @description Enable in organization
+       * @default true
+       */
+      is_active?: boolean;
+    };
+    /** TenantImageGenerationModelUpdate */
+    TenantImageGenerationModelUpdate: {
+      /**
+       * Display Name
+       * @description User-friendly display name
+       */
+      display_name?: string | null;
+      /**
+       * Description
+       * @description Model description
+       */
+      description?: string | null;
+      /**
+       * Family
+       * @description Model family
+       */
+      family?: string | null;
       /**
        * Hosting
        * @description Hosting location (swe, eu, usa)
@@ -10779,8 +10859,8 @@ export interface components {
        * @default []
        */
       mcp_servers?: {
-        [key: string]: unknown;
-      }[];
+          [key: string]: unknown;
+        }[];
     };
     /** UpdateSpaceGroupMemberRequest */
     UpdateSpaceGroupMemberRequest: {
@@ -11695,9 +11775,7 @@ export interface components {
       download_files: boolean;
       crawl_type: components["schemas"]["CrawlType"];
       update_interval: components["schemas"]["UpdateInterval"];
-      latest_crawl:
-        | components["schemas"]["intric__websites__presentation__website_models__CrawlRunPublic"]
-        | null;
+      latest_crawl: components["schemas"]["intric__websites__presentation__website_models__CrawlRunPublic"] | null;
       embedding_model: components["schemas"]["EmbeddingModelPublic"];
       metadata: components["schemas"]["WebsiteMetadata"];
       /**
@@ -12436,6 +12514,7 @@ export type $defs = Record<string, never>;
 export type external = Record<string, never>;
 
 export interface operations {
+
   /** Get Crawl Run */
   get_crawl_run_api_v1_crawl_runs__id___get: {
     parameters: {
@@ -14012,9 +14091,7 @@ export interface operations {
                 lock_reason?: string | null;
                 /** Credential Provider */
                 credential_provider?: string | null;
-                security_classification?:
-                  | components["schemas"]["SecurityClassificationPublic"]
-                  | null;
+                security_classification?: components["schemas"]["SecurityClassificationPublic"] | null;
                 /** Provider Name */
                 provider_name?: string | null;
                 /** Provider Type */
@@ -14307,9 +14384,7 @@ export interface operations {
                 lock_reason?: string | null;
                 /** Credential Provider */
                 credential_provider?: string | null;
-                security_classification?:
-                  | components["schemas"]["SecurityClassificationPublic"]
-                  | null;
+                security_classification?: components["schemas"]["SecurityClassificationPublic"] | null;
                 /** Provider Name */
                 provider_name?: string | null;
                 /** Provider Type */
@@ -14993,219 +15068,211 @@ export interface operations {
       200: {
         content: {
           "application/json": unknown;
-          "text/event-stream": OneOf<
-            [
-              {
+          "text/event-stream": OneOf<[{
+            /**
+             * Session Id
+             * Format: uuid
+             */
+            session_id: string;
+            /** Answer */
+            answer: string;
+            /** References */
+            references: components["schemas"]["InfoBlobAskAssistantPublic"][];
+            $defs: {
+              /** InfoBlobAskAssistantPublic */
+              InfoBlobAskAssistantPublic: {
+                /** Created At */
+                created_at?: string | null;
+                /** Updated At */
+                updated_at?: string | null;
                 /**
-                 * Session Id
+                 * Id
                  * Format: uuid
                  */
-                session_id: string;
-                /** Answer */
-                answer: string;
-                /** References */
-                references: components["schemas"]["InfoBlobAskAssistantPublic"][];
-                $defs: {
-                  /** InfoBlobAskAssistantPublic */
-                  InfoBlobAskAssistantPublic: {
-                    /** Created At */
-                    created_at?: string | null;
-                    /** Updated At */
-                    updated_at?: string | null;
-                    /**
-                     * Id
-                     * Format: uuid
-                     */
-                    id: string;
-                    metadata: components["schemas"]["InfoBlobMetadata"];
-                    /** Group Id */
-                    group_id?: string | null;
-                    /** Website Id */
-                    website_id?: string | null;
-                    /** Score */
-                    score: number;
-                  };
-                  /** InfoBlobMetadata */
-                  InfoBlobMetadata: {
-                    /** Url */
-                    url?: string | null;
-                    /** Title */
-                    title?: string | null;
-                    /**
-                     * Embedding Model Id
-                     * Format: uuid
-                     */
-                    embedding_model_id: string;
-                    /** Size */
-                    size: number;
-                  };
-                };
-              },
-              {
+                id: string;
+                metadata: components["schemas"]["InfoBlobMetadata"];
+                /** Group Id */
+                group_id?: string | null;
+                /** Website Id */
+                website_id?: string | null;
+                /** Score */
+                score: number;
+              };
+              /** InfoBlobMetadata */
+              InfoBlobMetadata: {
+                /** Url */
+                url?: string | null;
+                /** Title */
+                title?: string | null;
                 /**
-                 * Session Id
+                 * Embedding Model Id
                  * Format: uuid
                  */
-                session_id: string;
-                intric_event_type: components["schemas"]["IntricEventType"];
-                $defs: {
-                  /**
-                   * IntricEventType
-                   * @enum {string}
-                   */
-                  IntricEventType: "generating_image" | "tool_call" | "tool_approval_required";
-                };
-              },
-              {
+                embedding_model_id: string;
+                /** Size */
+                size: number;
+              };
+            };
+          }, {
+            /**
+             * Session Id
+             * Format: uuid
+             */
+            session_id: string;
+            intric_event_type: components["schemas"]["IntricEventType"];
+            $defs: {
+              /**
+               * IntricEventType
+               * @enum {string}
+               */
+              IntricEventType: "generating_image" | "tool_call" | "tool_approval_required";
+            };
+          }, {
+            /**
+             * Session Id
+             * Format: uuid
+             */
+            session_id: string;
+            /** Generated Files */
+            generated_files: components["schemas"]["FilePublic"][];
+            $defs: {
+              /** FilePublic */
+              FilePublic: {
+                /** Created At */
+                created_at?: string | null;
+                /** Updated At */
+                updated_at?: string | null;
                 /**
-                 * Session Id
+                 * Id
                  * Format: uuid
                  */
-                session_id: string;
-                /** Generated Files */
-                generated_files: components["schemas"]["FilePublic"][];
-                $defs: {
-                  /** FilePublic */
-                  FilePublic: {
-                    /** Created At */
-                    created_at?: string | null;
-                    /** Updated At */
-                    updated_at?: string | null;
-                    /**
-                     * Id
-                     * Format: uuid
-                     */
-                    id: string;
-                    /** Name */
-                    name: string;
-                    /** Mimetype */
-                    mimetype: string;
-                    /** Size */
-                    size: number;
-                    /** Transcription */
-                    transcription?: string | null;
-                    /** Token Count */
-                    token_count?: number | null;
-                  };
-                };
-              },
-              {
+                id: string;
+                /** Name */
+                name: string;
+                /** Mimetype */
+                mimetype: string;
+                /** Size */
+                size: number;
+                /** Transcription */
+                transcription?: string | null;
+                /** Token Count */
+                token_count?: number | null;
+              };
+            };
+          }, {
+            /**
+             * Session Id
+             * Format: uuid
+             */
+            session_id: string;
+            /** Question */
+            question: string;
+            /** Answer */
+            answer: string;
+            /** Files */
+            files: components["schemas"]["FilePublic"][];
+            /** Generated Files */
+            generated_files: components["schemas"]["FilePublic"][];
+            /** References */
+            references: components["schemas"]["InfoBlobAskAssistantPublic"][];
+            tools: components["schemas"]["UseTools"];
+            /** Web Search References */
+            web_search_references: components["schemas"]["WebSearchResultPublic"][];
+            $defs: {
+              /** FilePublic */
+              FilePublic: {
+                /** Created At */
+                created_at?: string | null;
+                /** Updated At */
+                updated_at?: string | null;
                 /**
-                 * Session Id
+                 * Id
                  * Format: uuid
                  */
-                session_id: string;
-                /** Question */
-                question: string;
-                /** Answer */
-                answer: string;
-                /** Files */
-                files: components["schemas"]["FilePublic"][];
-                /** Generated Files */
-                generated_files: components["schemas"]["FilePublic"][];
-                /** References */
-                references: components["schemas"]["InfoBlobAskAssistantPublic"][];
-                tools: components["schemas"]["UseTools"];
-                /** Web Search References */
-                web_search_references: components["schemas"]["WebSearchResultPublic"][];
-                $defs: {
-                  /** FilePublic */
-                  FilePublic: {
-                    /** Created At */
-                    created_at?: string | null;
-                    /** Updated At */
-                    updated_at?: string | null;
-                    /**
-                     * Id
-                     * Format: uuid
-                     */
-                    id: string;
-                    /** Name */
-                    name: string;
-                    /** Mimetype */
-                    mimetype: string;
-                    /** Size */
-                    size: number;
-                    /** Transcription */
-                    transcription?: string | null;
-                    /** Token Count */
-                    token_count?: number | null;
-                  };
-                  /** InfoBlobAskAssistantPublic */
-                  InfoBlobAskAssistantPublic: {
-                    /** Created At */
-                    created_at?: string | null;
-                    /** Updated At */
-                    updated_at?: string | null;
-                    /**
-                     * Id
-                     * Format: uuid
-                     */
-                    id: string;
-                    metadata: components["schemas"]["InfoBlobMetadata"];
-                    /** Group Id */
-                    group_id?: string | null;
-                    /** Website Id */
-                    website_id?: string | null;
-                    /** Score */
-                    score: number;
-                  };
-                  /** InfoBlobMetadata */
-                  InfoBlobMetadata: {
-                    /** Url */
-                    url?: string | null;
-                    /** Title */
-                    title?: string | null;
-                    /**
-                     * Embedding Model Id
-                     * Format: uuid
-                     */
-                    embedding_model_id: string;
-                    /** Size */
-                    size: number;
-                  };
-                  /** ToolAssistant */
-                  ToolAssistant: {
-                    /**
-                     * Id
-                     * Format: uuid
-                     */
-                    id: string;
-                    /** Handle */
-                    handle: string;
-                  };
-                  /** UseTools */
-                  UseTools: {
-                    /** Assistants */
-                    assistants: components["schemas"]["ToolAssistant"][];
-                  };
-                  /** WebSearchResultPublic */
-                  WebSearchResultPublic: {
-                    /**
-                     * Id
-                     * Format: uuid
-                     */
-                    id: string;
-                    /** Title */
-                    title: string;
-                    /** Url */
-                    url: string;
-                  };
-                };
-              },
-              {
+                id: string;
+                /** Name */
+                name: string;
+                /** Mimetype */
+                mimetype: string;
+                /** Size */
+                size: number;
+                /** Transcription */
+                transcription?: string | null;
+                /** Token Count */
+                token_count?: number | null;
+              };
+              /** InfoBlobAskAssistantPublic */
+              InfoBlobAskAssistantPublic: {
+                /** Created At */
+                created_at?: string | null;
+                /** Updated At */
+                updated_at?: string | null;
                 /**
-                 * Session Id
+                 * Id
                  * Format: uuid
                  */
-                session_id: string;
-                /** Error */
-                error: string;
-                /** Error Code */
-                error_code?: number | null;
-              }
-            ]
-          >;
+                id: string;
+                metadata: components["schemas"]["InfoBlobMetadata"];
+                /** Group Id */
+                group_id?: string | null;
+                /** Website Id */
+                website_id?: string | null;
+                /** Score */
+                score: number;
+              };
+              /** InfoBlobMetadata */
+              InfoBlobMetadata: {
+                /** Url */
+                url?: string | null;
+                /** Title */
+                title?: string | null;
+                /**
+                 * Embedding Model Id
+                 * Format: uuid
+                 */
+                embedding_model_id: string;
+                /** Size */
+                size: number;
+              };
+              /** ToolAssistant */
+              ToolAssistant: {
+                /**
+                 * Id
+                 * Format: uuid
+                 */
+                id: string;
+                /** Handle */
+                handle: string;
+              };
+              /** UseTools */
+              UseTools: {
+                /** Assistants */
+                assistants: components["schemas"]["ToolAssistant"][];
+              };
+              /** WebSearchResultPublic */
+              WebSearchResultPublic: {
+                /**
+                 * Id
+                 * Format: uuid
+                 */
+                id: string;
+                /** Title */
+                title: string;
+                /** Url */
+                url: string;
+              };
+            };
+          }, {
+            /**
+             * Session Id
+             * Format: uuid
+             */
+            session_id: string;
+            /** Error */
+            error: string;
+            /** Error Code */
+            error_code?: number | null;
+          }]>;
         };
       };
       /** @description Bad Request */
@@ -18871,6 +18938,185 @@ export interface operations {
    * @description Delete a tenant-specific transcription model.
    */
   delete_tenant_transcription_model_api_v1_admin_tenant_models_transcription__model_id___delete: {
+    parameters: {
+      path: {
+        model_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Image Generation Models */
+  get_image_generation_models_api_v1_image_generation_models__get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedResponse_ImageGenerationModelPublic_"];
+        };
+      };
+    };
+  };
+  /** Get Image Generation Model */
+  get_image_generation_model_api_v1_image_generation_models__id___get: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ImageGenerationModelPublic"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Update Image Generation Model */
+  update_image_generation_model_api_v1_image_generation_models__id___post: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ImageGenerationModelUpdate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ImageGenerationModelPublic"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Create Tenant Image Generation Model */
+  create_tenant_image_generation_model_api_v1_admin_tenant_models_image_generation__post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TenantImageGenerationModelCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ImageGenerationModelPublic"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Update Tenant Image Generation Model */
+  update_tenant_image_generation_model_api_v1_admin_tenant_models_image_generation__model_id___put: {
+    parameters: {
+      path: {
+        model_id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TenantImageGenerationModelUpdate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ImageGenerationModelPublic"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "application/json": components["schemas"]["GeneralError"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Delete Tenant Image Generation Model */
+  delete_tenant_image_generation_model_api_v1_admin_tenant_models_image_generation__model_id___delete: {
     parameters: {
       path: {
         model_id: string;

@@ -1352,6 +1352,7 @@
   "completion_models": "Completion models",
   "embedding_models": "Embedding models",
   "transcription_models": "Transcription models",
+  "image_generation_models": "Image generation",
   "edit_security_classification": "Edit security classification",
   "error_changing_model_status": "Error changing status of",
   "error_changing_default_status": "Error changing default status",

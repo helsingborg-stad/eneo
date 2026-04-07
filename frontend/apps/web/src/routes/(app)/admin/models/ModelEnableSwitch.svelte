@@ -8,16 +8,30 @@
   import { invalidate } from "$app/navigation";
   import { getAppContext } from "$lib/core/AppContext";
   import { getIntric } from "$lib/core/Intric";
-  import type { CompletionModel, EmbeddingModel, TranscriptionModel } from "@intric/intric-js";
+  import type {
+    CompletionModel,
+    EmbeddingModel,
+    TranscriptionModel,
+    ImageGenerationModel
+  } from "@intric/intric-js";
   import { Input, Tooltip } from "@intric/ui";
   import { m } from "$lib/paraglide/messages";
   import { toast } from "$lib/components/toast";
 
-  export let model: (CompletionModel | EmbeddingModel | TranscriptionModel) & {
+  export let model: (
+    | CompletionModel
+    | EmbeddingModel
+    | TranscriptionModel
+    | ImageGenerationModel
+  ) & {
     is_locked?: boolean | null | undefined;
     lock_reason?: string | null | undefined;
   };
-  export let type: "completionModel" | "embeddingModel" | "transcriptionModel";
+  export let type:
+    | "completionModel"
+    | "embeddingModel"
+    | "transcriptionModel"
+    | "imageGenerationModel";
 
   const intric = getIntric();
   const { environment } = getAppContext();
@@ -39,11 +53,12 @@
     }
   }
 
-  $: tooltip = model.lock_reason === "credentials"
-    ? m.api_credentials_required_for_provider()
-    : model.is_org_enabled
-      ? m.toggle_to_disable_model()
-      : m.toggle_to_enable_model();
+  $: tooltip =
+    model.lock_reason === "credentials"
+      ? m.api_credentials_required_for_provider()
+      : model.is_org_enabled
+        ? m.toggle_to_disable_model()
+        : m.toggle_to_enable_model();
 </script>
 
 <div class="-ml-3 flex items-center gap-4">

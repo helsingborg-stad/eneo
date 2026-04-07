@@ -1350,6 +1350,7 @@
   "completion_models": "Completion",
   "embedding_models": "Embedding",
   "transcription_models": "Transkription",
+  "image_generation_models": "Bildgenerering",
   "edit_security_classification": "Redigera säkerhetsklassificering",
   "error_changing_model_status": "Fel vid ändring av status för",
   "error_changing_default_status": "Fel vid ändring av standardstatus",

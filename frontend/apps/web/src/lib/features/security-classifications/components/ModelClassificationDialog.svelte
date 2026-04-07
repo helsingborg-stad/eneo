@@ -11,7 +11,8 @@
     IntricError,
     type CompletionModel,
     type EmbeddingModel,
-    type TranscriptionModel
+    type TranscriptionModel,
+    type ImageGenerationModel
   } from "@intric/intric-js";
   import SelectSecurityClassification from "./SelectSecurityClassification.svelte";
   import { getSecurityContext } from "../SecurityContext";
@@ -22,8 +23,8 @@
   import { toast } from "$lib/components/toast";
 
   type Props = {
-    model: CompletionModel | EmbeddingModel | TranscriptionModel;
-    type: "completionModel" | "embeddingModel" | "transcriptionModel";
+    model: CompletionModel | EmbeddingModel | TranscriptionModel | ImageGenerationModel;
+    type: "completionModel" | "embeddingModel" | "transcriptionModel" | "imageGenerationModel";
     openController: Writable<boolean>;
   };
 

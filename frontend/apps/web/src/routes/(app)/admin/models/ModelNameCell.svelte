@@ -1,15 +1,24 @@
 <!-- Copyright (c) 2026 Sundsvalls Kommun -->
 
 <script lang="ts">
-  import type { CompletionModel, EmbeddingModel, TranscriptionModel } from "@intric/intric-js";
+  import type {
+    CompletionModel,
+    EmbeddingModel,
+    TranscriptionModel,
+    ImageGenerationModel
+  } from "@intric/intric-js";
   import { Button, Tooltip } from "@intric/ui";
   import { writable } from "svelte/store";
   import ModelNameAndVendor from "$lib/features/ai-models/components/ModelNameAndVendor.svelte";
   import EditModelDialog from "./EditModelDialog.svelte";
   import { m } from "$lib/paraglide/messages";
 
-  export let model: CompletionModel | EmbeddingModel | TranscriptionModel;
-  export let type: "completionModel" | "embeddingModel" | "transcriptionModel";
+  export let model: CompletionModel | EmbeddingModel | TranscriptionModel | ImageGenerationModel;
+  export let type:
+    | "completionModel"
+    | "embeddingModel"
+    | "transcriptionModel"
+    | "imageGenerationModel";
   $: isTenantModel = model.provider_id != null;
 
   const showEditDialog = writable(false);
@@ -30,11 +39,11 @@
     <Tooltip text={m.default_model_tooltip()}>
       <div
         class="
-          inline-flex items-center px-2 py-[2px]
-          rounded-full text-[11px] font-medium tracking-wide cursor-default
-          bg-transparent
-          text-[oklch(50%_0.08_78)] dark:text-[oklch(70%_0.08_78)]
-          border border-[oklch(75%_0.06_78)] dark:border-[oklch(40%_0.06_78)]
+          inline-flex cursor-default items-center rounded-full
+          border border-[oklch(75%_0.06_78)] bg-transparent px-2 py-[2px]
+          text-[11px]
+          font-medium tracking-wide
+          text-[oklch(50%_0.08_78)] dark:border-[oklch(40%_0.06_78)] dark:text-[oklch(70%_0.08_78)]
         "
       >
         {m.default_model()}

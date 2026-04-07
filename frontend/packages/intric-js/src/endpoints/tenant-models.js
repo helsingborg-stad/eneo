@@ -204,6 +204,52 @@ export function initTenantModels(client) {
         method: "delete",
         params: { path: { id } }
       });
+    },
+
+    /**
+     * Create a new Image Generation Model.
+     * @param {Object} model
+     * @throws {IntricError}
+     * */
+    createImageGeneration: async (model) => {
+      const res = await client.fetch("/api/v1/admin/tenant-models/image-generation/", {
+        method: "post",
+        requestBody: {
+          "application/json": model
+        }
+      });
+
+      return res;
+    },
+
+    /**
+     * Update an Image Generation Model.
+     * @param {{id: string}} model
+     * @param {Object} update
+     * @throws {IntricError}
+     * */
+    updateImageGeneration: async ({ id }, update) => {
+      const res = await client.fetch("/api/v1/admin/tenant-models/image-generation/{id}/", {
+        method: "put",
+        params: { path: { id } },
+        requestBody: {
+          "application/json": update
+        }
+      });
+
+      return res;
+    },
+
+    /**
+     * Delete an Image Generation Model.
+     * @param {{id: string}} model
+     * @throws {IntricError}
+     * */
+    deleteImageGeneration: async ({ id }) => {
+      await client.fetch("/api/v1/admin/tenant-models/image-generation/{id}/", {
+        method: "delete",
+        params: { path: { id } }
+      });
     }
   };
 }
