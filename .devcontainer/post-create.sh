@@ -25,6 +25,12 @@ sudo apt-get install -y libmagic1 ffmpeg
 curl -LsSf https://astral.sh/uv/install.sh | sh
 export PATH="$HOME/.local/bin:$PATH"
 
+# Fix permissions for the backend virtual environment volume if it already exists
+if [ -d "/workspace/backend/.venv" ]; then
+    echo "Fixing permissions on /workspace/backend/.venv"
+    sudo chown -R vscode:vscode /workspace/backend/.venv || true
+fi
+
 # Install Python dependencies
 cd /workspace/backend
 uv sync

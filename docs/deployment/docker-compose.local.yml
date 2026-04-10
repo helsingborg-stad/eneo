@@ -1,0 +1,14 @@
+# Override file to build from local source instead of ghcr.io images.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.local.yml up --build -d
+
+services:
+  frontend:
+    build: ../../frontend
+    image: eneo-frontend:local
+  backend:
+    build: ../../backend
+    image: eneo-backend:local
+  worker:
+    image: eneo-backend:local
+  db-init:
+    image: eneo-backend:local
