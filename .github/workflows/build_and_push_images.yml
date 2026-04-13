@@ -28,8 +28,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  BACKEND_IMAGE_NAME: eneo-ai/eneo-backend
-  FRONTEND_IMAGE_NAME: eneo-ai/eneo-frontend
+  BACKEND_IMAGE_NAME: helsingborg-stad/eneo-backend
+  FRONTEND_IMAGE_NAME: helsingborg-stad/eneo-frontend
 
 jobs:
   build-and-push:
