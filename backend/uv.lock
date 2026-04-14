@@ -1196,7 +1196,7 @@ requires-dist = [
     { name = "python-pptx", specifier = ">=1.0.2,<2" },
     { name = "redis", specifier = ">=5.0.8,<6" },
     { name = "rich", specifier = ">=14.2.0" },
-    { name = "scrapy", specifier = ">=2.11.2,<3" },
+    { name = "scrapy", specifier = ">=2.15.0,<3" },
     { name = "sentry-sdk", extras = ["fastapi"], specifier = "==2.8.0" },
     { name = "soundfile", specifier = ">=0.12.1,<0.13" },
     { name = "sqlalchemy-mixins", specifier = ">=2.0.5,<3" },
@@ -2895,7 +2895,7 @@ wheels = [
 
 [[package]]
 name = "scrapy"
-version = "2.11.2"
+version = "2.15.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cryptography" },
@@ -2912,15 +2912,14 @@ dependencies = [
     { name = "pypydispatcher", marker = "platform_python_implementation == 'PyPy'" },
     { name = "queuelib" },
     { name = "service-identity" },
-    { name = "setuptools" },
     { name = "tldextract" },
     { name = "twisted" },
     { name = "w3lib" },
     { name = "zope-interface" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f2/1f/5524416a64c030fbe18caeba079e7176836b281bf9eb50b79efdf8015063/scrapy-2.11.2.tar.gz", hash = "sha256:dfbd565384fc3fffeba121f5a3a2d0899ac1f756d41432ca0879933fbfb3401d", size = 1187710, upload-time = "2024-05-14T12:00:40.403Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b8/7b/48608f18bd0fe3a51124fe14cb48690dc0768aea52e66faf632467940509/scrapy-2.15.0.tar.gz", hash = "sha256:8072b42da2b54ccafaf188298c8da851197e83f6d4a19db324777ee2e204b70c", size = 1290115, upload-time = "2026-04-09T12:02:11.92Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0d/4e/6c06a4cfbb9a1e243c975da6a09982f085b1a14939fb195ea9e3e2f2b206/Scrapy-2.11.2-py2.py3-none-any.whl", hash = "sha256:4be353d6abbb942a9f7e7614ca8b5f3d9037381176ac8d8859c8cac676e74fa0", size = 290065, upload-time = "2024-05-14T12:00:36.774Z" },
+    { url = "https://files.pythonhosted.org/packages/d4/f1/88c440a6b5a331e0f11d1d45442ae538bc52a26828bbe9755abff00afa48/scrapy-2.15.0-py3-none-any.whl", hash = "sha256:7d7a421fb75711c096cf8ad8b3d5090a4fc403e04abe4d38f86d612666fe07ac", size = 352486, upload-time = "2026-04-09T12:02:09.99Z" },
 ]
 
 [[package]]
