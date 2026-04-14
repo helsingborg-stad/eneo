@@ -1290,6 +1290,7 @@ class SpaceRepository:
         await self._set_completion_models(entry_in_db, space.completion_models)
         await self._set_embedding_models(entry_in_db, space.embedding_models)
         await self._set_transcription_models(entry_in_db, space.transcription_models)
+        await self._set_image_generation_models(entry_in_db, space.image_generation_models)
         await self._set_mcp_servers(entry_in_db, space.mcp_servers)
         if mcp_tool_settings is not None:
             await self._set_mcp_tools(
