@@ -238,15 +238,11 @@ wheels = [
 
 [[package]]
 name = "automat"
-version = "22.10.0"
+version = "25.4.16"
 source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "attrs" },
-    { name = "six" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/7a/7b/9c3d26d8a0416eefbc0428f168241b32657ca260fb7ef507596ff5c2f6c4/Automat-22.10.0.tar.gz", hash = "sha256:e56beb84edad19dcc11d30e8d9b895f75deeb5ef5e96b84a467066b3b84bb04e", size = 59099, upload-time = "2022-10-29T07:04:03.579Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e3/0f/d40bbe294bbf004d436a8bcbcfaadca8b5140d39ad0ad3d73d1a8ba15f14/automat-25.4.16.tar.gz", hash = "sha256:0017591a5477066e90d26b0e696ddc143baafd87b588cfac8100bc6be9634de0", size = 129977, upload-time = "2025-04-16T20:12:16.002Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/29/90/64aabce6c1b820395452cc5472b8f11cd98320f40941795b8069aef4e0e0/Automat-22.10.0-py2.py3-none-any.whl", hash = "sha256:c3164f8742b9dc440f3682482d32aaff7bb53f71740dd018533f9de286b64180", size = 26404, upload-time = "2022-10-29T07:04:02.174Z" },
+    { url = "https://files.pythonhosted.org/packages/02/ff/1175b0b7371e46244032d43a56862d0af455823b5280a50c63d99cc50f18/automat-25.4.16-py3-none-any.whl", hash = "sha256:04e9bce696a8d5671ee698005af6e5a9fa15354140a87f4870744604dcdd3ba1", size = 42842, upload-time = "2025-04-16T20:12:14.447Z" },
 ]
 
 [[package]]
@@ -3256,7 +3252,7 @@ wheels = [
 
 [[package]]
 name = "twisted"
-version = "24.7.0"
+version = "26.4.0rc2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -3267,9 +3263,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "zope-interface" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8b/bf/f30eb89bcd14a21a36b4cd3d96658432d4c590af3c24bbe08ea77fa7bbbb/twisted-24.7.0.tar.gz", hash = "sha256:5a60147f044187a127ec7da96d170d49bcce50c6fd36f594e60f4587eff4d394", size = 3516844, upload-time = "2024-08-10T13:27:08.278Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/0a/44/60da409efd39860f5c7355ff844690d96168bc02eb1b06171d2fc81b80ae/twisted-26.4.0rc2.tar.gz", hash = "sha256:d1db6c391a1b6e70028c3212298178621db149a6f75555f6503da557c763406d", size = 3575417, upload-time = "2026-04-29T15:44:25.136Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/49/d2/7b3e869b983fbf29d770fc2893f8df7c1739c6ff03a2b926b4fc43e4263e/twisted-24.7.0-py3-none-any.whl", hash = "sha256:734832ef98108136e222b5230075b1079dad8a3fc5637319615619a7725b0c81", size = 3181556, upload-time = "2024-08-10T13:27:04.649Z" },
+    { url = "https://files.pythonhosted.org/packages/73/30/cdb6811e0853bd6d60ee6a685385b9e469db1dfdce344bc53f2e7d3fe6f4/twisted-26.4.0rc2-py3-none-any.whl", hash = "sha256:41eeb62a7f2688c634f7a1af76e225c58da48f8af1640fcb285ce386a96889e2", size = 3230408, upload-time = "2026-04-29T15:44:22.514Z" },
 ]
 
 [[package]]
