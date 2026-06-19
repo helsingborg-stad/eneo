@@ -53,7 +53,7 @@ dependencies = [
     "greenlet>=3.2.2,<4",
     "litellm==1.83.0",
     "mcp>=1.2.0,<2", # Model Context Protocol SDK for MCP server integration
-    "cryptography>=43.0.0,<44", # For Fernet encryption of HTTP auth passwords
+    "cryptography>=48.0.1,<49", # For Fernet encryption of HTTP auth passwords
     "httpx~=0.28.0",
     "pandas>=2.2.3,<3",
     "orjson>=3.9,<4",
