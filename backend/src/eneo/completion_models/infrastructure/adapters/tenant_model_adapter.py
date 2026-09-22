@@ -1170,6 +1170,7 @@ class TenantModelAdapter(CompletionModelAdapter):
         messages = provider_input.messages
         if provider_input.tools:
             litellm_kwargs["tools"] = provider_input.tools
+            litellm_kwargs["reasoning_effort"] = "none"
 
         # Check which params will be dropped and log effective params
         dropped = self._get_dropped_params(litellm_kwargs)
@@ -1549,6 +1550,7 @@ class TenantModelAdapter(CompletionModelAdapter):
         messages = provider_input.messages
         if provider_input.tools:
             litellm_kwargs["tools"] = provider_input.tools
+            litellm_kwargs["reasoning_effort"] = "none"
 
         # Check which params will be dropped and log effective params
         dropped = self._get_dropped_params(litellm_kwargs)
