@@ -26,8 +26,8 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
   REGISTRY: ghcr.io
-  BACKEND_IMAGE_NAME: eneo-ai/eneo-backend
-  FRONTEND_IMAGE_NAME: eneo-ai/eneo-frontend
+  BACKEND_IMAGE_NAME: helsingborg-stad/eneo-backend
+  FRONTEND_IMAGE_NAME: helsingborg-stad/eneo-frontend
   BUILDX_VERSION: v0.33.0
   BUILDKIT_IMAGE: moby/buildkit@sha256:0168606be2315b7c807a03b3d8aa79beefdb31c98740cebdffdfeebf31190c9f
 
